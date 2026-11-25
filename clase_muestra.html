@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" href="data:,">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
 <title>¿Trabajamos en equipo o solo nos repartimos tareas?</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -11,124 +11,129 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
-  /* Paleta aproximada inspirada en el Tec de Monterrey: verifica en el manual de marca */
   :root{
-    --azul:#00338d; --azul-claro:#2f6fd6;
-    --morado:#5b2d8e; --lila:#b388eb; --lila-claro:#e5d4fb;
-    --fondo:linear-gradient(135deg,#1c0b3f 0%,#2a0f5c 45%,#00338d 100%);
+    --verde:#2E9E4A; --verde-claro:#7ED491;
+    --azul:#1E2A5E; --azul-claro:#3D5BA9;
     --tarjeta:rgba(255,255,255,.08); --borde:rgba(255,255,255,.18);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{font-family:system-ui,"Segoe UI",Roboto,sans-serif;color:#fff;background:var(--fondo);
+  body{font-family:system-ui,"Segoe UI",Roboto,sans-serif;color:#fff;
+       background:linear-gradient(135deg,#0d1533 0%,#1E2A5E 55%,#14532d 100%);
        background-attachment:fixed;overflow:hidden}
-  body.alumno{overflow:auto;height:auto;min-height:100%;padding:1.2rem}
+  body.alumno{overflow:auto;height:auto;min-height:100%;padding:1rem}
   body.alumno #docente{display:none}
   body:not(.alumno) #alumno{display:none}
   body.alumno .nav,body.alumno .qr-mini,body.alumno .barra{display:none}
 
-  /* ---------- Diapositivas ---------- */
-  .slide{display:none;position:fixed;inset:0;padding:5vh 6vw;flex-direction:column;
-         justify-content:center;align-items:center;text-align:center;animation:entrar .5s ease}
+  /* Diapositivas (docente) */
+  .slide{display:none;position:fixed;inset:0;padding:5vh 5vw;flex-direction:column;
+         align-items:center;text-align:center;overflow:auto;animation:entrar .5s ease}
   .slide.activa{display:flex}
   @keyframes entrar{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-  h1{font-size:clamp(2rem,5.5vw,4rem);line-height:1.1;margin-bottom:.4em}
-  h2{font-size:clamp(1.8rem,4.5vw,3rem);margin-bottom:.5em}
-  p{font-size:clamp(1.1rem,2.4vw,1.5rem);line-height:1.5;margin:.4em 0}
-  .emoji{font-size:clamp(3rem,8vw,5.5rem)}
+  h1{font-size:clamp(2rem,5vw,3.8rem);line-height:1.1;margin-bottom:.4em}
+  h2{font-size:clamp(1.7rem,4.2vw,2.8rem);margin-bottom:.5em}
+  h3{font-size:1.3rem;margin-bottom:.4em}
+  p{font-size:clamp(1.05rem,2.2vw,1.4rem);line-height:1.5;margin:.4em 0}
+  li{font-size:clamp(1rem,2vw,1.25rem);line-height:1.5;margin:.3rem 0 .3rem 1.2rem;text-align:left}
+  .emoji{font-size:clamp(3rem,7vw,5rem)}
+  .logo-tec{height:72px;margin-bottom:.8rem;display:block;background:#fff;border-radius:14px;padding:.4rem .8rem}
   .portada{display:grid;grid-template-columns:1.4fr 1fr;gap:4vw;align-items:center;width:min(1100px,100%)}
   .portada>div:first-child{text-align:left}
-  .qr-box{background:#fff;border-radius:24px;padding:1.2rem;text-align:center;color:#2a0f4f}
+  .qr-box{background:#fff;border-radius:24px;padding:1.2rem;text-align:center;color:var(--azul)}
   .qr-box small{display:block;margin-top:.6rem;font-weight:700;font-size:1rem}
-  .qr-box img,.qr-box canvas{display:block;margin:auto}
+  .qr-box canvas,.qr-box img{display:block;margin:auto}
 
   .caja{background:var(--tarjeta);border:1px solid var(--borde);border-radius:22px;
-        padding:1.2rem 1.6rem;margin-top:1rem;max-width:820px;width:100%}
-  .tarjeta{background:var(--tarjeta);border:2px solid var(--borde);border-radius:20px;
-           padding:1.2rem;cursor:pointer;transition:transform .2s,border-color .2s;user-select:none}
-  .tarjeta:hover{transform:translateY(-4px);border-color:var(--lila)}
-  .tarjeta.sel{border-color:#fde047;transform:scale(1.04)}
-  .tarjeta.ok{background:rgba(34,197,94,.25);border-color:#4ade80}
-  .tarjeta.mal{background:rgba(239,68,68,.25);border-color:#f87171}
-  .grid{display:grid;gap:1rem;width:min(1000px,100%);
-        grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:1.2rem}
-  .logo-chip{background:#fff;border-radius:16px;width:72px;height:72px;margin:0 auto .5rem;
-             display:flex;align-items:center;justify-content:center}
-  .logo{width:44px;height:44px;object-fit:contain}
-  .tarjeta h3{font-size:1.2rem;margin:.2em 0}
-  .tarjeta small{font-size:.95rem;opacity:.9;display:block;min-height:1.2em}
-
-  .pasos{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:1.2rem}
+        padding:1.1rem 1.4rem;margin-top:.8rem;width:min(820px,100%)}
+  .dos{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:min(1000px,100%);margin-top:.8rem}
+  .dos .caja{margin-top:0;text-align:left}
+  .pasos{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
   .paso{background:var(--tarjeta);border:1px solid var(--borde);border-radius:18px;
-        padding:1rem 1.3rem;min-width:190px;font-size:1.1rem}
-  .paso b{display:block;font-size:1.8rem;color:#fde047}
+        padding:1rem 1.3rem;min-width:180px;font-size:1.05rem}
+  .paso b{display:block;font-size:1.7rem;color:#fde047}
 
-  /* Barras de votación en vivo */
+  /* Barras de votación */
   .barras{width:min(800px,100%);margin-top:1rem}
   .barra-fila{display:grid;grid-template-columns:260px 1fr 60px;gap:.8rem;align-items:center;
-              margin:.6rem 0;font-size:1.2rem;text-align:left}
+              margin:.6rem 0;font-size:1.1rem;text-align:left}
   .pista{background:var(--tarjeta);border-radius:999px;height:34px;overflow:hidden;border:1px solid var(--borde)}
-  .relleno{height:100%;background:linear-gradient(90deg,var(--lila),var(--azul-claro));
-           width:0;transition:width .6s ease;border-radius:999px}
+  .relleno{height:100%;width:0;transition:width .6s ease;border-radius:999px}
   .conteo{font-weight:800;color:#fde047}
+  .tally{margin-top:1rem;font-size:1.1rem;font-weight:700;color:#fde047}
 
-  /* Tablero en vivo */
-  .tablero{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:min(1100px,100%);margin-top:1rem}
-  .tablero.mini{grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;font-size:.9rem}
-  .col{background:var(--tarjeta);border:1px solid var(--borde);border-radius:18px;padding:.8rem;min-height:200px}
-  .col h4{font-size:1.2rem;color:var(--lila-claro);margin-bottom:.5rem}
-  .nota{background:#fff;color:#2a0f4f;border-radius:12px;padding:.7rem;margin:.5rem 0;
-        text-align:left;font-weight:600;box-shadow:0 4px 10px rgba(0,0,0,.25);animation:entrar .4s ease}
-  .nota small{display:block;font-weight:400;opacity:.7;margin-top:.3rem}
-  .nota.tocable{cursor:pointer}
-  .nota.tocable:hover{transform:scale(1.02)}
-  .tablero.mini .nota{font-size:.85rem;padding:.4rem}
+  /* Herramientas */
+  .apps{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem;width:min(1000px,100%);margin-top:.8rem}
+  .app{background:var(--tarjeta);border:2px solid var(--borde);border-radius:16px;padding:.6rem .3rem;
+       cursor:pointer;transition:transform .2s;user-select:none}
+  .app:hover{transform:translateY(-3px)}
+  .app.hecha{opacity:.55}
+  .app small{display:block;font-size:.85rem;font-weight:700}
+  .chip{width:58px;height:58px;border-radius:14px;margin:0 auto .4rem;display:flex;
+        align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;color:#fff}
+  .chip img{width:62%;height:62%;object-fit:contain;filter:brightness(0) invert(1)}
+  .detalle{display:none;margin-top:1rem;background:var(--tarjeta);border:1px solid var(--borde);
+           border-radius:18px;padding:1rem 1.3rem;width:min(820px,100%);text-align:left}
+  .detalle p{font-size:1.05rem}
 
-  /* Nube de palabras en vivo */
+  /* Tablero de roles (infografía) */
+  .roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;width:min(1000px,100%);margin-top:1rem}
+  .rol{background:var(--tarjeta);border:1px solid var(--borde);border-radius:18px;padding:1rem;text-align:left}
+  .rol h4{color:var(--verde-claro);font-size:1.1rem;margin-bottom:.3rem}
+
+  /* Nube */
   .nube{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6rem 1.2rem;
-        width:min(1000px,100%);min-height:260px;margin-top:1rem}
-  .nube span{font-weight:800;transition:font-size .4s ease;line-height:1}
+        width:min(1000px,100%);min-height:240px;margin-top:1rem}
+  .nube span{font-weight:800;line-height:1;transition:font-size .4s ease}
 
-  /* ---------- Vista alumno ---------- */
-  #alumno{max-width:640px;margin:0 auto}
-  #alumno h2{text-align:center;font-size:2rem;margin-bottom:1rem}
-  .bloque{background:var(--tarjeta);border:1px solid var(--borde);border-radius:20px;
-          padding:1rem;margin-bottom:1rem}
-  .bloque h3{margin-bottom:.6rem;color:var(--lila-claro)}
+  /* Vista alumno */
+  #alumno{max-width:680px;margin:0 auto}
+  #alumno>h2{text-align:center;font-size:2rem;margin-bottom:.4rem}
+  .estado{text-align:center;color:var(--verde-claro);font-weight:700;margin-bottom:1rem}
+  .bloque{background:var(--tarjeta);border:1px solid var(--borde);border-radius:20px;padding:1rem;margin-bottom:1rem}
+  .bloque h3{color:var(--verde-claro);margin-bottom:.5rem}
+  .act{display:none}
+  .act.on{display:block}
+  #espera p{text-align:center}
   input{width:100%;padding:.8rem 1rem;border-radius:12px;border:none;font-size:1.05rem;margin:.3rem 0}
-  .fila{display:flex;gap:.5rem}
-  .fila input{flex:1}
-  .botones{display:grid;gap:.6rem;margin:.5rem 0}
-  .btn{display:inline-block;padding:.8rem 1.3rem;border-radius:999px;border:none;font-size:1.05rem;
-       font-weight:700;cursor:pointer;color:#fff;background:var(--azul-claro);text-decoration:none}
-  .btn.lila{background:var(--morado)} .btn.verde{background:#15803d} .btn.naranja{background:#c2410c}
-  .btn:hover{filter:brightness(1.12)}
+  .botones{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0}
+  .ayuda{font-size:.9rem;opacity:.8;margin-top:.4rem}
   .msg{min-height:1.4em;font-weight:700;color:#fde047;margin-top:.4rem}
 
-  /* ---------- Controles ---------- */
-  .barra{position:fixed;bottom:0;left:0;height:6px;background:linear-gradient(90deg,var(--lila),#fde047);
-         transition:width .4s}
+  /* Botones */
+  .btn{display:inline-block;padding:.75rem 1.3rem;border-radius:999px;border:none;font-size:1.05rem;
+       font-weight:700;cursor:pointer;color:#fff;background:var(--verde);text-decoration:none}
+  .btn.azul{background:var(--azul-claro)} .btn.verde-oscuro{background:#14532d}
+  .btn:hover{filter:brightness(1.12)}
+  .btn:disabled{opacity:.4;cursor:default}
+
+  /* Controles docente */
+  .barra{position:fixed;bottom:0;left:0;height:6px;background:linear-gradient(90deg,var(--verde),var(--verde-claro));transition:width .4s}
   .nav{position:fixed;bottom:16px;right:18px;display:flex;gap:8px;align-items:center;z-index:5}
   .nav button{background:rgba(255,255,255,.15);color:#fff;border:1px solid var(--borde);border-radius:12px;
               padding:.5rem .9rem;font-size:1rem;cursor:pointer}
   .nav span{font-size:.95rem;opacity:.85;min-width:56px;text-align:center}
   .qr-mini{position:fixed;bottom:14px;left:14px;background:#fff;border-radius:14px;padding:.5rem;z-index:5}
-  .qr-mini::after{content:"Participa";display:block;text-align:center;color:#2a0f4f;font-size:.75rem;font-weight:700}
+  .qr-mini::after{content:"Participa";display:block;text-align:center;color:var(--azul);font-size:.75rem;font-weight:700}
   .confeti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:10}
   .confeti i{position:absolute;top:-5%;width:11px;height:11px;border-radius:3px;animation:caer 2.6s linear forwards}
   @keyframes caer{to{transform:translateY(110vh) rotate(720deg)}}
+
   @media (max-width:700px){
-    .portada{grid-template-columns:1fr;text-align:center}
+    .portada{grid-template-columns:1fr}
     .portada>div:first-child{text-align:center}
-    .barra-fila{grid-template-columns:1fr 50px;}
+    .dos,.roles{grid-template-columns:1fr}
+    .barra-fila{grid-template-columns:1fr 50px}
     .barra-fila .etq{grid-column:1/-1}
-    .tablero{grid-template-columns:1fr}
+    .apps{gap:.4rem}
+    .app small{font-size:.6rem}
+    .chip{width:44px;height:44px;font-size:1.1rem}
   }
 </style>
 </head>
 <body>
 
-<!-- ============ CONFIGURACIÓN: edita solo este bloque ============ -->
+<!-- ============ CONFIGURACIÓN ============ -->
 <script>
 const CONFIG = {
   sala: "clase-trabajo-equipo",
@@ -141,21 +146,21 @@ const CONFIG = {
     messagingSenderId: "954149423520",
     appId: "1:954149423520:web:6958ae056464d36113fcc5"
   },
-  docs:   "https://docs.google.com/document/d/REEMPLAZA_DOC_ID/edit",
-  forms:  "https://forms.gle/REEMPLAZA_FORM_ID",
-  padlet: "https://padlet.com/REEMPLAZA_PADLET_ID"
+  docs:  "https://docs.google.com/document/d/1HYgr5ivAzi-8F6PrBOYFoqcaHlWCWBWWnbmEmxgGiNg/edit?usp=sharing",
+  forms: "https://forms.gle/REEMPLAZA_FORM_ID"
 };
 </script>
 
-<!-- ============ VISTA DOCENTE (proyección) ============ -->
+<!-- ============ VISTA DOCENTE ============ -->
 <div id="docente">
 
   <section class="slide activa">
     <div class="portada">
       <div>
+        <img class="logo-tec" src="logo.png" alt="Universidad Tecmilenio" onerror="this.remove()">
         <div class="emoji">🤝💻</div>
         <h1>¿Trabajamos en equipo o solo nos repartimos tareas?</h1>
-        <p>Escaneen el código con su celular y entren a la clase.</p>
+        <p>Escaneen el código y entren desde su celular.</p>
       </div>
       <div class="qr-box">
         <div id="qr-grande"></div>
@@ -168,7 +173,31 @@ const CONFIG = {
     <h2>🗓️ Dilema: ¿qué harían primero?</h2>
     <p>Cinco compañeros, cinco horarios distintos y la entrega es el viernes.</p>
     <div class="barras" id="barras"></div>
-    <p style="margin-top:1rem;opacity:.85">Voten desde su celular. Los resultados se actualizan en vivo.</p>
+    <p style="opacity:.8;margin-top:1rem">Voten desde su celular. Las barras cambian en vivo.</p>
+  </section>
+
+  <section class="slide">
+    <h2>💬 WhatsApp: un aliado con límites</h2>
+    <div class="dos">
+      <div class="caja">
+        <h3>✅ Lo que hace bien</h3>
+        <ul>
+          <li>Todos ya lo usamos; no hay que instalar nada</li>
+          <li>Avisos inmediatos y llamadas rápidas</li>
+          <li>Funciona aun con poca señal</li>
+        </ul>
+      </div>
+      <div class="caja">
+        <h3>⚠️ Donde se queda corto</h3>
+        <ul>
+          <li>Los acuerdos se pierden entre cientos de mensajes</li>
+          <li>No tiene tareas con responsable y fecha</li>
+          <li>No permite editar un mismo documento a la vez</li>
+          <li>Mezcla lo personal con lo escolar</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:1.2rem">WhatsApp sirve para <b>avisar</b>. Para <b>construir juntos</b>, cada tarea necesita su propia app.</p>
   </section>
 
   <section class="slide">
@@ -176,59 +205,53 @@ const CONFIG = {
     <div class="pasos">
       <div class="paso"><b>1</b>Distinguir si una tarea es en vivo o en diferido</div>
       <div class="paso"><b>2</b>Elegir la herramienta correcta, con razón</div>
-      <div class="paso"><b>3</b>Resolver un reto en equipo</div>
-      <div class="paso"><b>4</b>Explicar tu elección con una evidencia</div>
+      <div class="paso"><b>3</b>Crear una infografía en equipo</div>
+      <div class="paso"><b>4</b>Explicar tu elección con evidencia</div>
     </div>
   </section>
 
   <section class="slide">
     <h2>🧭 Tres preguntas para elegir</h2>
-    <div class="caja">
-      <p><b>1.</b> ¿Necesitamos estar al mismo tiempo?<br><small>Sí → 💬 Comunicar · No → sigue</small></p>
-      <p><b>2.</b> ¿Estamos creando algo juntos?<br><small>Sí → ✏️ Co-crear · No → sigue</small></p>
-      <p><b>3.</b> ¿Hay que repartir y dar seguimiento?<br><small>Sí → 📋 Organizar</small></p>
+    <div class="caja" style="text-align:left">
+      <p><b>1.</b> ¿Necesitamos estar al mismo tiempo?</p>
+      <p><b>2.</b> ¿Estamos creando algo juntos?</p>
+      <p><b>3.</b> ¿Hay que repartir y dar seguimiento?</p>
     </div>
-    <p style="margin-top:1.2rem">⭐ Regla de oro: usa <b>la menor cantidad de apps</b> que resuelva la tarea.</p>
+    <p style="margin-top:1rem">Cada alumno responde desde su celular. La mejor opción aparece al final.</p>
+    <div class="tally" id="tally-decision"></div>
   </section>
 
   <section class="slide">
-    <h2>🧩 Clasifica la herramienta</h2>
-    <p>Toca una herramienta y después la categoría donde va.</p>
-    <div class="grid" id="apps"></div>
-    <div class="grid" style="margin-top:1.5rem">
-      <div class="tarjeta" data-cat-drop="comunicar"><div class="logo-chip">💬</div><h3>Comunicar</h3><small id="c-comunicar"></small></div>
-      <div class="tarjeta" data-cat-drop="cocrear"><div class="logo-chip">✏️</div><h3>Co-crear</h3><small id="c-cocrear"></small></div>
-      <div class="tarjeta" data-cat-drop="organizar"><div class="logo-chip">📋</div><h3>Organizar</h3><small id="c-organizar"></small></div>
-    </div>
-    <div class="msg" id="msg-clasifica"></div>
+    <h2>🧩 Conoce las herramientas</h2>
+    <p>Toca cada una para ver para qué sirve. Después, cada alumno la clasifica desde su celular.</p>
+    <div class="apps" id="grid-docente"></div>
+    <div class="detalle" id="detalle-docente"></div>
+    <div class="tally" id="tally-clasif"></div>
   </section>
 
   <section class="slide">
-    <h2>👀 Demo: dos personas, un mismo documento</h2>
-    <p>Observen el cursor de otra persona moverse mientras escribe.</p>
+    <h2>📝 Herramienta de trabajo: Google Docs</h2>
     <div class="pasos">
       <div class="paso"><b>1</b>Abrir el documento</div>
       <div class="paso"><b>2</b>Escribir a la vez</div>
       <div class="paso"><b>3</b>Ver el historial</div>
     </div>
-    <p style="margin-top:1.2rem;opacity:.75;font-size:1rem">Sin internet: muestra un video de 30 s.</p>
-    <div style="margin-top:1rem"><a class="btn" id="lnk-docs" target="_blank">📄 Abrir documento</a></div>
+    <div style="margin-top:1.2rem"><a class="btn" id="lnk-docs" target="_blank" rel="noopener">📄 Abrir documento</a></div>
+    <p style="opacity:.75;margin-top:1rem;font-size:1rem">Sin internet: muestra un video de 30 s.</p>
   </section>
 
   <section class="slide">
-    <h2>🏆 Reto en vivo: Del caos al orden</h2>
-    <p>Feria Universitaria · Escriban su tarea en el tablero desde su celular.</p>
-    <div class="tablero" id="tab-docente"></div>
-    <div style="margin-top:1rem"><a class="btn naranja" id="lnk-padlet" target="_blank">🧱 Ver muro de Padlet</a></div>
+    <h2>🖼️ Actividad: infografía del ciclo del agua</h2>
+    <p>Trabajen en el mismo documento. Cada integrante completa su rol y lo marca en su celular.</p>
+    <div class="roles" id="roles-docente"></div>
+    <div class="tally" id="tally-avance"></div>
   </section>
 
   <section class="slide">
     <h2>☁️ ¿Qué te llevas de hoy?</h2>
-    <p>Una palabra por persona. Aparece en vivo.</p>
+    <p>Una palabra por persona, en vivo.</p>
     <div class="nube" id="nube"></div>
-    <div style="margin-top:.8rem">
-      <a class="btn verde" id="lnk-forms" target="_blank">📝 Ticket de salida (formulario)</a>
-    </div>
+    <div style="margin-top:.8rem"><a class="btn verde-oscuro" id="lnk-forms" target="_blank" rel="noopener">📝 Ticket de salida</a></div>
   </section>
 
   <section class="slide">
@@ -240,76 +263,191 @@ const CONFIG = {
 
   <div class="barra" id="barra"></div>
   <div class="nav">
-    <button id="prev">◀</button><span id="contador"></span><button id="next">▶</button>
+    <button id="prev">◀</button>
+    <span id="contador"></span>
+    <button id="next">▶</button>
+    <button id="reset" title="Borrar registros y empezar de nuevo">⟲</button>
   </div>
   <div class="qr-mini"><div id="qr-mini"></div></div>
 </div>
 
-<!-- ============ VISTA ALUMNO (celular) ============ -->
+<!-- ============ VISTA ALUMNO ============ -->
 <div id="alumno">
   <h2>Participa 📱</h2>
+  <p class="estado" id="alumno-estado">Conectando…</p>
   <input id="nombre" placeholder="Tu nombre (opcional)" maxlength="30">
 
-  <div class="bloque">
-    <h3>1. Vota</h3>
+  <div class="bloque" id="espera">
+    <p>Mira la pantalla 👀 La actividad aparece cuando el docente la abra.</p>
+  </div>
+
+  <div class="act bloque" data-act="votos">
+    <h3>Vota</h3>
     <p>¿Qué harías primero?</p>
     <div class="botones" id="votos-alumno"></div>
     <div class="msg" id="msg-voto"></div>
   </div>
 
-  <div class="bloque">
-    <h3>2. Tu tarea en el tablero</h3>
-    <div class="fila">
-      <input id="nota-txt" placeholder="Ej. Redactar introducción" maxlength="60">
-      <button class="btn" id="btn-nota">Agregar</button>
-    </div>
-    <p style="font-size:.9rem;opacity:.8;margin-top:.5rem">Toca tu nota para pasarla a la siguiente columna.</p>
-    <div class="tablero mini" id="tab-alumno"></div>
+  <div class="act bloque" data-act="decision">
+    <h3>Elige tu herramienta</h3>
+    <div id="act-decision"></div>
   </div>
 
-  <div class="bloque">
-    <h3>3. Una palabra</h3>
+  <div class="act bloque" data-act="clasif">
+    <h3>Toca una herramienta y clasifícala</h3>
+    <div class="apps" id="grid-alumno"></div>
+    <div class="detalle" id="detalle-alumno"></div>
+  </div>
+
+  <div class="act bloque" data-act="infografia">
+    <h3>Infografía del ciclo del agua</h3>
+    <p>Abre el documento y trabaja en tu parte.</p>
+    <div class="botones"><a class="btn azul" id="lnk-docs-alumno" target="_blank" rel="noopener">📄 Abrir documento</a></div>
+    <p class="ayuda">Elige tu rol y márcalo cuando termines tu parte.</p>
+    <div id="roles-alumno"></div>
+    <div class="msg" id="msg-avance"></div>
+  </div>
+
+  <div class="act bloque" data-act="palabra">
+    <h3>Una palabra</h3>
     <p>¿Qué te llevas de hoy?</p>
-    <div class="fila">
-      <input id="palabra" placeholder="Ej. organizar" maxlength="24">
-      <button class="btn lila" id="btn-palabra">Enviar</button>
-    </div>
+    <input id="palabra" placeholder="Ej. organizar" maxlength="24">
+    <div class="botones"><button class="btn" id="btn-palabra">Enviar</button></div>
     <div class="msg" id="msg-palabra"></div>
   </div>
 </div>
 
-
 <script>
-/* ==================== UTILIDADES ==================== */
+/* ==================== DATOS COMPARTIDOS ==================== */
 const params = new URLSearchParams(location.search);
 const esAlumno = params.has('p');
 if (esAlumno) document.body.classList.add('alumno');
 
-const linkAlumno = location.href.split('?')[0] + '?p=1';
 const $ = id => document.getElementById(id);
+const linkAlumno = location.href.split('?')[0] + '?p=1';
 
+// Una entrada por diapositiva, en el mismo orden que las secciones del docente
+const DIAPOS = [
+  {t:'Portada',        act:null},
+  {t:'Dilema',         act:'votos'},
+  {t:'WhatsApp',       act:null},
+  {t:'Objetivos',      act:null},
+  {t:'Tres preguntas', act:'decision'},
+  {t:'Herramientas',   act:'clasif'},
+  {t:'Google Docs',    act:null},
+  {t:'Infografía',     act:'infografia'},
+  {t:'Ticket',         act:'palabra'},
+  {t:'Cierre',         act:null}
+];
+
+const OPC = {
+  A:'💬 Chat de WhatsApp',
+  B:'📝 Documento compartido',
+  C:'📋 Tablero con tareas'
+};
+
+const CATS = {comunicar:'💬 Comunicar', cocrear:'✏️ Co-crear', organizar:'📋 Organizar'};
+
+// Roles de la infografía: 3 integrantes cubren las 4 secciones de la plantilla
+const ROLES = [
+  {id:'r1', t:'Integrante 1', seccion:'1. Introducción: qué es el ciclo y por qué es vital'},
+  {id:'r2', t:'Integrante 2', seccion:'2. Explicación: evaporación, condensación, precipitación e infiltración'},
+  {id:'r3', t:'Integrante 3', seccion:'3. Conclusiones y 4. Referencias'}
+];
+
+// Color oficial de cada marca (el logo se pinta en blanco sobre ese color)
+const APPS = [
+  {id:'whatsapp', nombre:'WhatsApp', slug:'whatsapp', color:'#25D366', cat:'comunicar',
+   para:'Mensajes rápidos y llamadas entre personas.',
+   ejemplo:'Avisar que la reunión cambió de hora.',
+   limite:'Los acuerdos se pierden entre muchos mensajes y no tiene tareas con responsable y fecha.'},
+  {id:'discord', nombre:'Discord', slug:'discord', color:'#5865F2', cat:'comunicar',
+   para:'Canales organizados de texto y voz.',
+   ejemplo:'Un canal para dudas y otro para avances del equipo.',
+   limite:'Su interfaz es nueva para quien no juega; hay que explicarla.'},
+  {id:'teams', nombre:'Teams', slug:'microsoftteams', color:'#6264A7', cat:'comunicar',
+   para:'Reuniones, chat y archivos del equipo en un solo lugar.',
+   ejemplo:'Videollamada del equipo con el archivo a la vista.',
+   limite:'Sus funciones completas suelen requerir una cuenta institucional.'},
+  {id:'gdocs', nombre:'Docs', slug:'googledocs', color:'#4285F4', cat:'cocrear',
+   para:'Escribir un texto que varias personas editan al mismo tiempo.',
+   ejemplo:'Redactar la introducción del trabajo entre tres.',
+   limite:'Para ver los cambios en tiempo real necesita conexión.'},
+  {id:'gslides', nombre:'Slides', slug:'googleslides', color:'#F4B400', cat:'cocrear',
+   para:'Presentaciones e infografías que varias personas editan a la vez.',
+   ejemplo:'Armar la infografía del ciclo del agua entre tres.',
+   limite:'Con muchas imágenes pesadas puede volverse lenta.'},
+  {id:'canva', nombre:'Canva', slug:'canva', color:'#00C4CC', cat:'cocrear',
+   para:'Diseñar carteles, presentaciones e infografías con plantillas.',
+   ejemplo:'Crear un cartel del ciclo del agua con íconos listos.',
+   limite:'Algunas plantillas y elementos requieren la versión de pago.'},
+  {id:'miro', nombre:'Miro', slug:'miro', color:'#FFD02F', cat:'cocrear',
+   para:'Pizarrón infinito para lluvia de ideas y mapas.',
+   ejemplo:'Lluvia de ideas con notas adhesivas antes de escribir.',
+   limite:'Un tablero con muchas piezas puede volverse difícil de leer.'},
+  {id:'trello', nombre:'Trello', slug:'trello', color:'#0052CC', cat:'organizar',
+   para:'Tarjetas en columnas con responsable y fecha.',
+   ejemplo:'Columnas: por hacer, en proceso y hecho.',
+   limite:'No sirve para escribir textos largos; ahí conviene un documento.'},
+  {id:'notion', nombre:'Notion', slug:'notion', color:'#000000', cat:'organizar',
+   para:'Notas, bases de datos y páginas de proyecto en un solo lugar.',
+   ejemplo:'Una página con el plan del proyecto y su calendario.',
+   limite:'Tiene muchas opciones; al principio puede confundir.'},
+  {id:'gcal', nombre:'Calendar', slug:'googlecalendar', color:'#4285F4', cat:'organizar',
+   para:'Calendario compartido con recordatorios.',
+   ejemplo:'Apartar la fecha de entrega y avisar a todo el equipo.',
+   limite:'No registra avances ni quién hizo qué; solo fechas.'}
+];
+
+// Preguntas Sí/No para elegir herramienta
+const PREG = [
+  {q:'¿Necesitamos estar al mismo tiempo?',  si:'comunicar'},
+  {q:'¿Estamos creando algo juntos?',        si:'cocrear'},
+  {q:'¿Hay que repartir y dar seguimiento?', si:'organizar'}
+];
+const MEJOR = {
+  comunicar:{app:'Discord (o Teams)', txt:'Canales de texto y voz para coordinarse en vivo. WhatsApp sirve para avisos rápidos.'},
+  cocrear:  {app:'Google Slides (o Docs)', txt:'Varias personas editan el mismo archivo y ven los cambios al momento.'},
+  organizar:{app:'Trello', txt:'Tarjetas con responsable y fecha, en columnas: por hacer, en proceso y hecho.'}
+};
+
+/* ==================== ESTADO POR SESIÓN (compartido) ==================== */
+// VER cambia al borrar registros; las marcas locales del alumno dependen de VER
+let VER = '0';
+const fkey = k => `${CONFIG.sala}-${VER}-${k}`;
+const flag = k => localStorage.getItem(fkey(k)) === '1';
+const setFlag = k => localStorage.setItem(fkey(k), '1');
+
+/* ==================== UTILIDADES ==================== */
 function el(tag, cls, txt){
   const e = document.createElement(tag);
   if (cls) e.className = cls;
-  if (txt != null) e.textContent = txt;   // textContent evita inyección HTML
+  if (txt != null) e.textContent = txt;
   return e;
 }
-function logo(slug){
+function boton(txt, fn, cls=''){
+  const b = el('button', 'btn ' + cls, txt);
+  b.onclick = fn;
+  return b;
+}
+function logo(a){
+  const w = el('div', 'chip');
+  w.style.background = a.color;
   const i = document.createElement('img');
-  i.className = 'logo';
-  i.alt = '';
-  i.src = `https://cdn.jsdelivr.net/npm/simple-icons@11/icons/${slug}.svg`;
-  i.onerror = () => i.remove();
-  return i;
+  i.alt = a.nombre;
+  i.src = `https://cdn.jsdelivr.net/npm/simple-icons@11/icons/${a.slug}.svg`;
+  i.onerror = () => { i.remove(); w.textContent = a.nombre[0]; };
+  w.appendChild(i);
+  return w;
 }
 function qr(contenedor, texto, tam){
   contenedor.innerHTML = '';
   new QRCode(contenedor, {text: texto, width: tam, height: tam,
-                          colorDark: '#2a0f4f', colorLight: '#ffffff'});
+                          colorDark: '#1E2A5E', colorLight: '#ffffff'});
 }
 function confeti(){
-  const c = el('div','confeti');
-  const cols = ['#fde047','#b388eb','#2f6fd6','#4ade80','#f472b6'];
+  const c = el('div', 'confeti');
+  const cols = ['#7ED491','#fde047','#3D5BA9','#2E9E4A','#ffffff'];
   for (let k = 0; k < 60; k++){
     const p = el('i');
     p.style.left = Math.random()*100 + '%';
@@ -320,98 +458,101 @@ function confeti(){
   document.body.appendChild(c);
   setTimeout(() => c.remove(), 3500);
 }
+function enlace(a, url){
+  if (!url || url.includes('REEMPLAZA')) a.style.display = 'none';
+  else a.href = url;
+}
+function pintarGrid(cont, det, alumno){
+  cont.innerHTML = '';
+  APPS.forEach(a => {
+    const hecha = alumno && flag('clasif-' + a.id);
+    const c = el('div', 'app' + (hecha ? ' hecha' : ''));
+    c.style.borderColor = a.color;
+    c.appendChild(logo(a));
+    c.appendChild(el('small', '', a.nombre + (hecha ? ' ✔' : '')));
+    c.onclick = () => mostrarDetalle(a, cont, det, alumno);
+    cont.appendChild(c);
+  });
+}
+function mostrarDetalle(a, cont, det, alumno){
+  det.innerHTML = '';
+  det.style.display = 'block';
+  det.appendChild(el('h3', '', a.nombre));
+  det.appendChild(el('p', '', '📌 Para qué sirve: ' + a.para));
+  det.appendChild(el('p', '', '💡 Ejemplo: ' + a.ejemplo));
+  det.appendChild(el('p', '', '⚠️ Límite: ' + a.limite));
+  if (!alumno) return;
+  if (flag('clasif-' + a.id)){
+    det.appendChild(el('p', '', 'Ya la clasificaste ✅'));
+    return;
+  }
+  det.appendChild(el('p', '', '¿En qué categoría va?'));
+  const f = el('div', 'botones');
+  Object.keys(CATS).forEach(cat =>
+    f.appendChild(boton(CATS[cat], () => clasificar(a, cat, cont, det))));
+  det.appendChild(f);
+}
+function clasificar(a, cat, cont, det){
+  const ok = a.cat === cat;
+  setFlag('clasif-' + a.id);
+  db.ref(R + '/clasif').push({app: a.id, cat, ok, t: Date.now()});
+  det.querySelector('.botones')?.remove();
+  det.appendChild(el('p', '', ok
+    ? '✔ ¡Correcto! Va en ' + CATS[a.cat] + '.'
+    : '✘ Va en ' + CATS[a.cat] + '. Revisa "Para qué sirve".'));
+  if (ok) confeti();
+  pintarGrid(cont, det, true);
+}
 
 /* ==================== FIREBASE ==================== */
 firebase.initializeApp(CONFIG.firebase);
 const db = firebase.database();
 const R = 'sala/' + CONFIG.sala;
 
-/* ==================== ENLACES Y QR ==================== */
+/* ==================== VISTA DOCENTE ==================== */
 if (!esAlumno){
-  $('lnk-docs').href = CONFIG.docs;
-  $('lnk-padlet').href = CONFIG.padlet;
-  $('lnk-forms').href = CONFIG.forms;
   qr($('qr-grande'), linkAlumno, 220);
   qr($('qr-mini'), linkAlumno, 96);
-}
+  enlace($('lnk-docs'), CONFIG.docs);
+  enlace($('lnk-forms'), CONFIG.forms);
 
-/* ==================== VISTA DOCENTE: navegación ==================== */
-if (!esAlumno){
-  const slides = [...document.querySelectorAll('#docente .slide')];
-  let i = 0;
-  function mostrar(n){
-    i = Math.max(0, Math.min(n, slides.length - 1));
-    slides.forEach((s, k) => s.classList.toggle('activa', k === i));
-    $('barra').style.width = ((i + 1) / slides.length * 100) + '%';
-    $('contador').textContent = (i + 1) + ' / ' + slides.length;
+  const slidesT = [...document.querySelectorAll('#docente .slide')];
+  let actual = 0;
+  function irA(n){
+    actual = Math.max(0, Math.min(n, slidesT.length - 1));
+    slidesT.forEach((s, k) => s.classList.toggle('activa', k === actual));
+    $('barra').style.width = ((actual + 1) / slidesT.length * 100) + '%';
+    $('contador').textContent = (actual + 1) + ' / ' + slidesT.length;
+    db.ref(R + '/estado').set({slide: actual});
   }
-  $('next').onclick = () => mostrar(i + 1);
-  $('prev').onclick = () => mostrar(i - 1);
+  $('next').onclick = () => irA(actual + 1);
+  $('prev').onclick = () => irA(actual - 1);
   document.addEventListener('keydown', e => {
-    if (['ArrowRight',' ','PageDown'].includes(e.key)) mostrar(i + 1);
-    if (['ArrowLeft','PageUp'].includes(e.key)) mostrar(i - 1);
+    if (['ArrowRight',' ','PageDown'].includes(e.key)) { e.preventDefault(); irA(actual + 1); }
+    if (['ArrowLeft','PageUp'].includes(e.key)) irA(actual - 1);
   });
-  mostrar(0);
+  $('reset').onclick = () => {
+    if (!confirm('¿Borrar todas las participaciones y empezar de nuevo?')) return;
+    db.ref(R).update({
+      votos: null, nube: null, decision: null, clasif: null, avance: null,
+      ver: String(Date.now())
+    }).then(() => irA(0));
+  };
+  db.ref(R + '/estado').once('value', s => irA(s.val()?.slide ?? 0));
 
-  /* --- Clasificación con logotipos --- */
-  const APPS = [
-    {app:'Discord',      slug:'discord',     cat:'comunicar'},
-    {app:'Slack',        slug:'slack',       cat:'comunicar'},
-    {app:'Google Docs',  slug:'googledocs',  cat:'cocrear'},
-    {app:'Google Colab', slug:'googlecolab', cat:'cocrear'},
-    {app:'Trello',       slug:'trello',      cat:'organizar'},
-    {app:'Notion',       slug:'notion',      cat:'organizar'}
-  ];
-  let appSel = null;
-  APPS.forEach(a => {
-    const t = el('div', 'tarjeta');
-    t.dataset.cat = a.cat;
-    const chip = el('div', 'logo-chip');
-    chip.appendChild(logo(a.slug));
-    t.appendChild(chip);
-    t.appendChild(el('h3', '', a.app));
-    t.onclick = () => {
-      document.querySelectorAll('#apps .tarjeta').forEach(x => x.classList.remove('sel'));
-      t.classList.add('sel');
-      appSel = {el: t, data: a};
-    };
-    $('apps').appendChild(t);
-  });
-  document.querySelectorAll('[data-cat-drop]').forEach(z => {
-    z.onclick = () => {
-      if (!appSel){ $('msg-clasifica').textContent = 'Primero toca una herramienta 👆'; return; }
-      const cat = z.dataset.catDrop;
-      const ok = appSel.data.cat === cat;
-      z.classList.add(ok ? 'ok' : 'mal');
-      $('c-' + cat).textContent += (ok ? '✔ ' : '✘ ') + appSel.data.app + '  ';
-      $('msg-clasifica').textContent = ok
-        ? '¡Correcto! ' + appSel.data.app + ' va aquí.'
-        : appSel.data.app + ' no es de esta categoría. ¡Intenta otra!';
-      if (ok){
-        appSel.el.style.opacity = .35;
-        appSel.el.style.pointerEvents = 'none';
-        confeti();
-      }
-      appSel.el.classList.remove('sel');
-      appSel = null;
-    };
-  });
-
-  /* --- Votación en vivo --- */
-  const OPC = {A:'Chat de WhatsApp', B:'Documento compartido', C:'Tablero con tareas'};
-  const COLORES_OPC = {A:'#b388eb', B:'#2f6fd6', C:'#4ade80'};
+  // Votación
   Object.keys(OPC).forEach(k => {
-    const fila = el('div', 'barra-fila');
-    fila.appendChild(el('div', 'etq', k + ') ' + OPC[k]));
-    const pista = el('div', 'pista');
-    const rel = el('div', 'relleno');
-    rel.id = 'rel-' + k;
-    rel.style.background = COLORES_OPC[k];
-    pista.appendChild(rel);
-    fila.appendChild(pista);
-    fila.appendChild(el('div', 'conteo', '0'));
-    fila.lastChild.id = 'cnt-' + k;
-    $('barras').appendChild(fila);
+    const COL = {A:'#7ED491', B:'#3D5BA9', C:'#fde047'}[k];
+    const f = el('div', 'barra-fila');
+    f.appendChild(el('div', 'etq', k + ') ' + OPC[k]));
+    const p = el('div', 'pista');
+    const r = el('div', 'relleno');
+    r.id = 'rel-' + k; r.style.background = COL;
+    p.appendChild(r);
+    f.appendChild(p);
+    const c = el('div', 'conteo', '0'); c.id = 'cnt-' + k;
+    f.appendChild(c);
+    $('barras').appendChild(f);
   });
   db.ref(R + '/votos').on('value', s => {
     const c = {A:0, B:0, C:0};
@@ -423,11 +564,40 @@ if (!esAlumno){
     });
   });
 
-  /* --- Tablero en vivo --- */
-  db.ref(R + '/tablero').on('value', s => renderTablero(s, $('tab-docente'), false));
+  // Herramientas: el docente toca para ver la descripción
+  pintarGrid($('grid-docente'), $('detalle-docente'), false);
 
-  /* --- Nube de palabras en vivo --- */
-  const PALETA = ['#b388eb','#2f6fd6','#4ade80','#fde047','#f472b6','#60a5fa'];
+  // Resultados
+  db.ref(R + '/decision').on('value', s => {
+    const c = {comunicar:0, cocrear:0, organizar:0, ninguna:0};
+    s.forEach(x => { const k = x.val().cat; c[k] = (c[k] || 0) + 1; });
+    $('tally-decision').textContent =
+      `Respuestas → Comunicar: ${c.comunicar} · Co-crear: ${c.cocrear} · Organizar: ${c.organizar}`;
+  });
+  db.ref(R + '/clasif').on('value', s => {
+    let t = 0, ok = 0;
+    s.forEach(x => { t++; if (x.val().ok) ok++; });
+    $('tally-clasif').textContent = `Clasificaciones: ${t} · Correctas: ${ok}`;
+  });
+
+  // Roles de la infografía (solo lectura en la proyección)
+  ROLES.forEach(r => {
+    const c = el('div', 'rol');
+    c.appendChild(el('h4', '', r.t));
+    c.appendChild(el('p', '', r.seccion));
+    c.dataset.rol = r.id;
+    $('roles-docente').appendChild(c);
+  });
+  db.ref(R + '/avance').on('value', s => {
+    const listos = new Set();
+    s.forEach(x => listos.add(x.val().rol));
+    document.querySelectorAll('#roles-docente .rol').forEach(c =>
+      c.style.borderColor = listos.has(c.dataset.rol) ? '#7ED491' : '');
+    $('tally-avance').textContent = `Roles terminados: ${listos.size} de ${ROLES.length}`;
+  });
+
+  // Nube de palabras
+  const PALETA = ['#7ED491','#3D5BA9','#fde047','#ffffff','#60a5fa','#2E9E4A'];
   db.ref(R + '/nube').on('value', s => {
     const c = {};
     s.forEach(ch => { const t = ch.val().t; c[t] = (c[t] || 0) + 1; });
@@ -442,60 +612,111 @@ if (!esAlumno){
   });
 }
 
-/* ==================== TABLERO (compartido) ==================== */
-const COLS = [['todo','Por hacer'], ['proc','En proceso'], ['hecho','Hecho']];
-function renderTablero(snap, contenedor, editable){
-  const datos = [];
-  snap.forEach(ch => datos.push({id: ch.key, ...ch.val()}));
-  contenedor.innerHTML = '';
-  COLS.forEach(([k, nombre]) => {
-    const col = el('div', 'col');
-    col.appendChild(el('h4', '', nombre));
-    datos.filter(d => d.col === k).forEach(d => {
-      const nota = el('div', 'nota', d.texto);
-      nota.appendChild(el('small', '', d.autor || 'Anónimo'));
-      if (editable && k !== 'hecho'){
-        nota.classList.add('tocable');
-        nota.onclick = () => db.ref(R + '/tablero/' + d.id)
-                                .update({col: k === 'todo' ? 'proc' : 'hecho'});
-      }
-      col.appendChild(nota);
-    });
-    contenedor.appendChild(col);
-  });
-}
-db.ref(R + '/tablero').on('value', s => {
-  if (esAlumno) renderTablero(s, $('tab-alumno'), true);
-});
-
-/* ==================== VISTA ALUMNO: acciones ==================== */
+/* ==================== VISTA ALUMNO ==================== */
 if (esAlumno){
-  const VOTO_KEY = 'voto-' + CONFIG.sala;
-  const OPC = {A:'💬 Chat de WhatsApp', B:'📝 Documento compartido', C:'📋 Tablero con tareas'};
-  Object.keys(OPC).forEach(k => {
-    const b = el('button', 'btn', OPC[k]);
-    b.onclick = () => {
-      if (localStorage.getItem(VOTO_KEY)){ $('msg-voto').textContent = 'Ya votaste ✅'; return; }
-      db.ref(R + '/votos').push({op: k, t: Date.now()});
-      localStorage.setItem(VOTO_KEY, '1');
-      $('msg-voto').textContent = '¡Voto enviado! 🎉';
-    };
-    $('votos-alumno').appendChild(b);
+  let SLIDE = 0, dPaso = 0, dRes = undefined;
+
+  function pintarVotos(){
+    const c = $('votos-alumno');
+    c.innerHTML = '';
+    Object.keys(OPC).forEach(k => {
+      const b = boton(OPC[k], () => {
+        db.ref(R + '/votos').push({op: k, t: Date.now()});
+        setFlag('voto');
+        pintarVotos();
+      });
+      if (flag('voto')) b.disabled = true;
+      c.appendChild(b);
+    });
+    $('msg-voto').textContent = flag('voto') ? 'Ya votaste ✅' : '';
+  }
+
+  function pintarDecision(){
+    const c = $('act-decision');
+    c.innerHTML = '';
+    if (dRes !== undefined){
+      if (dRes === 'ninguna'){
+        c.appendChild(el('h3', '', 'Quizá no necesitan app: una conversación en persona basta.'));
+      } else {
+        const m = MEJOR[dRes];
+        c.appendChild(el('p', '', 'Mejor opción para esta tarea:'));
+        c.appendChild(el('h3', '', '⭐ ' + m.app));
+        c.appendChild(el('p', '', m.txt));
+      }
+      return;
+    }
+    const p = PREG[dPaso];
+    c.appendChild(el('p', '', `Pregunta ${dPaso + 1} de 3`));
+    c.appendChild(el('h3', '', p.q));
+    const f = el('div', 'botones');
+    f.appendChild(boton('✅ Sí', () => finDecision(p.si)));
+    f.appendChild(boton('❌ No', () => {
+      if (dPaso < PREG.length - 1){ dPaso++; pintarDecision(); }
+      else finDecision(null);
+    }, 'azul'));
+    c.appendChild(f);
+  }
+  function finDecision(cat){
+    dRes = cat || 'ninguna';
+    db.ref(R + '/decision').push({cat: dRes, t: Date.now()});
+    pintarDecision();
+  }
+
+  function pintarRoles(){
+    const c = $('roles-alumno');
+    c.innerHTML = '';
+    ROLES.forEach(r => {
+      const hecho = flag('av-' + r.id);
+      const b = boton((hecho ? '✔ ' : '') + r.t + ': ' + r.seccion.split('.')[0] + '. Marcar lista',
+        () => {
+          db.ref(R + '/avance').push({rol: r.id, t: Date.now()});
+          setFlag('av-' + r.id);
+          $('msg-avance').textContent = '¡Gracias por tu parte! 🙌';
+          pintarRoles();
+        }, hecho ? 'verde-oscuro' : '');
+      b.style.display = 'block';
+      b.style.width = '100%';
+      b.style.marginBottom = '.5rem';
+      b.disabled = hecho;
+      c.appendChild(b);
+    });
+  }
+
+  function pintarActivo(){
+    const d = DIAPOS[SLIDE] || DIAPOS[0];
+    $('alumno-estado').textContent = `Diapositiva ${SLIDE + 1} de ${DIAPOS.length}: ${d.t}`;
+    document.querySelectorAll('#alumno .act').forEach(a =>
+      a.classList.toggle('on', a.dataset.act === d.act));
+    $('espera').style.display = d.act ? 'none' : 'block';
+    if (d.act === 'decision') pintarDecision();
+    if (d.act === 'infografia') pintarRoles();
+  }
+
+  // Cuando el docente borra registros cambia "ver": todo vuelve a empezar
+  db.ref(R + '/ver').on('value', s => {
+    VER = s.val() || '0';
+    dPaso = 0; dRes = undefined;
+    $('detalle-alumno').style.display = 'none';
+    pintarVotos();
+    pintarGrid($('grid-alumno'), $('detalle-alumno'), true);
+    pintarRoles();
+    pintarActivo();
   });
 
-  $('btn-nota').onclick = () => {
-    const txt = $('nota-txt').value.trim();
-    if (!txt) return;
-    db.ref(R + '/tablero').push({
-      col: 'todo', texto: txt, autor: $('nombre').value.trim() || 'Anónimo'
-    });
-    $('nota-txt').value = '';
-  };
+  // Diapositiva actual, controlada por el docente
+  db.ref(R + '/estado').on('value', s => {
+    SLIDE = s.val()?.slide ?? 0;
+    pintarActivo();
+  });
+
+  enlace($('lnk-docs-alumno'), CONFIG.docs);
 
   $('btn-palabra').onclick = () => {
+    if (flag('palabra')){ $('msg-palabra').textContent = 'Ya enviaste tu palabra ✅'; return; }
     const t = $('palabra').value.trim().toLowerCase().slice(0, 24);
     if (!t) return;
     db.ref(R + '/nube').push({t});
+    setFlag('palabra');
     $('palabra').value = '';
     $('msg-palabra').textContent = '¡Gracias! 🙌';
   };
