@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trabajo en equipo digital</title>
+<style>
+  /* ===== CONFIGURACIÓN: cambia solo estos enlaces ===== */
+  :root{
+    --padlet: "https://padlet.com/REEMPLAZA_PADLET_ID";
+    --docs:   "https://docs.google.com/document/d/REEMPLAZA_DOC_ID/edit";
+    --forms:  "https://forms.gle/REEMPLAZA_FORM_ID";
+    --azul:#2563eb; --verde:#16a34a; --naranja:#ea580c; --morado:#7c3aed;
+    --fondo:#0f172a; --texto:#f8fafc; --tarjeta:#1e293b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,"Segoe UI",Roboto,sans-serif;background:var(--fondo);
+       color:var(--texto);height:100vh;overflow:hidden;}
+  .slide{display:none;height:100vh;padding:5vh 6vw;flex-direction:column;
+         justify-content:center;align-items:center;text-align:center;
+         animation:entrar .5s ease}
+  .slide.activa{display:flex}
+  @keyframes entrar{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  h1{font-size:clamp(2rem,6vw,4.2rem);line-height:1.1;margin-bottom:.4em}
+  h2{font-size:clamp(1.6rem,4.5vw,3rem);margin-bottom:.6em}
+  p,li{font-size:clamp(1.1rem,2.6vw,1.6rem);line-height:1.5}
+  .emoji{font-size:clamp(3rem,9vw,6rem);margin-bottom:.2em}
+  .grid{display:grid;gap:1.2rem;width:min(1000px,100%);
+        grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:1.5rem}
+  .tarjeta{background:var(--tarjeta);border-radius:20px;padding:1.4rem;
+           cursor:pointer;border:3px solid transparent;transition:transform .2s,border .2s;
+           user-select:none}
+  .tarjeta:hover{transform:translateY(-4px)}
+  .tarjeta.sel{border-color:#fde047;transform:scale(1.04)}
+  .tarjeta .icono{font-size:3rem}
+  .tarjeta h3{font-size:1.3rem;margin:.3em 0}
+  .tarjeta small{font-size:1rem;opacity:.85}
+  .ok{background:#14532d !important}
+  .mal{background:#7f1d1d !important}
+  .btn{display:inline-block;margin:.4rem;padding:.9rem 1.6rem;border-radius:999px;
+       border:none;font-size:1.1rem;font-weight:700;cursor:pointer;text-decoration:none;
+       color:#fff;background:var(--azul)}
+  .btn.verde{background:var(--verde)} .btn.naranja{background:var(--naranja)}
+  .btn.morado{background:var(--morado)}
+  .btn:hover{filter:brightness(1.1)}
+  .barra{position:fixed;bottom:0;left:0;height:6px;background:#fde047;transition:width .4s}
+  .nav{position:fixed;bottom:18px;right:20px;display:flex;gap:10px;align-items:center}
+  .nav button{background:#334155;color:#fff;border:none;border-radius:12px;
+              padding:.6rem 1rem;font-size:1rem;cursor:pointer}
+  .nav span{font-size:1rem;opacity:.8;min-width:60px;text-align:center}
+  .caja{background:var(--tarjeta);border-radius:20px;padding:1.2rem 1.6rem;
+        margin-top:1rem;max-width:760px;font-size:1.15rem}
+  .resp{font-size:1.4rem;font-weight:700;margin-top:1rem;min-height:2em}
+  .pasos{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:1.5rem}
+  .paso{background:var(--tarjeta);border-radius:16px;padding:1rem 1.4rem;
+        font-size:1.1rem;min-width:180px}
+  .paso b{display:block;font-size:1.6rem;color:#fde047}
+  .rubrica td,.rubrica th{padding:.7rem 1rem;font-size:1.05rem}
+  table{border-collapse:collapse}
+  .rubrica th{background:var(--azul)}
+  .rubrica td{background:var(--tarjeta)}
+  .estrellas{font-size:1.4rem;letter-spacing:4px}
+  .confeti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+  .confeti i{position:absolute;top:-10%;width:12px;height:12px;animation:caer 2.5s linear forwards}
+  @keyframes caer{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+
+<!-- ============ 1. PORTADA ============ -->
+<section class="slide activa">
+  <div class="emoji">🤝💻</div>
+  <h1>¿Trabajamos en equipo<br>o solo nos repartimos tareas?</h1>
+  <p>Hoy vamos a descubrir cómo hacer equipo <b>de verdad</b> con herramientas digitales.</p>
+</section>
+
+<!-- ============ 2. DILEMA + VOTACIÓN ============ -->
+<section class="slide">
+  <h2>🗓️ Dilema de la semana</h2>
+  <p>Son <b>5 compañeros</b>, <b>5 horarios distintos</b> y la entrega es <b>el viernes</b>.<br>Cada quien tiene una versión del trabajo. ¿Qué harían primero?</p>
+  <div class="grid">
+    <div class="tarjeta" data-votar="A"><div class="icono">💬</div><h3>A</h3><small>Escribir al grupo de WhatsApp</small></div>
+    <div class="tarjeta" data-votar="B"><div class="icono">📝</div><h3>B</h3><small>Abrir un documento compartido</small></div>
+    <div class="tarjeta" data-votar="C"><div class="icono">📋</div><h3>C</h3><small>Crear un tablero con tareas y fechas</small></div>
+  </div>
+  <div class="resp" id="resp-votar"></div>
+</section>
+
+<!-- ============ 3. OBJETIVOS ============ -->
+<section class="slide">
+  <h2>🎯 Al final de la clase podrás:</h2>
+  <div class="pasos">
+    <div class="paso"><b>1</b>Distinguir si una tarea es en vivo o en diferido</div>
+    <div class="paso"><b>2</b>Elegir la herramienta correcta, con razón</div>
+    <div class="paso"><b>3</b>Usarla para resolver un reto en equipo</div>
+    <div class="paso"><b>4</b>Explicar tu elección con una prueba</div>
+  </div>
+</section>
+
+<!-- ============ 4. TRES PREGUNTAS ============ -->
+<section class="slide">
+  <h2>🧭 Tres preguntas para elegir</h2>
+  <div class="caja">
+    <p><b>1.</b> ¿Necesitamos estar al mismo tiempo? <br><small>Sí → 💬 Comunicar &nbsp;|&nbsp; No → sigue</small></p>
+    <p><b>2.</b> ¿Estamos creando algo juntos? <br><small>Sí → ✏️ Co-crear &nbsp;|&nbsp; No → sigue</small></p>
+    <p><b>3.</b> ¿Hay que repartir y dar seguimiento? <br><small>Sí → 📋 Organizar</small></p>
+  </div>
+  <p style="margin-top:1.2rem">⭐ Regla de oro: usa <b>la menos cantidad de apps</b> que resuelva la tarea.</p>
+</section>
+
+<!-- ============ 5. CLASIFICA ============ -->
+<section class="slide">
+  <h2>🧩 Clasifica la herramienta</h2>
+  <p>Toca una app y luego la categoría donde va.</p>
+  <div class="grid" id="apps">
+    <div class="tarjeta" data-app="Discord" data-cat="comunicar"><div class="icono">🎧</div><h3>Discord</h3></div>
+    <div class="tarjeta" data-app="Google Docs" data-cat="cocrear"><div class="icono">📄</div><h3>Google Docs</h3></div>
+    <div class="tarjeta" data-app="Trello" data-cat="organizar"><div class="icono">🗂️</div><h3>Trello</h3></div>
+    <div class="tarjeta" data-app="Canva" data-cat="cocrear"><div class="icono">🎨</div><h3>Canva</h3></div>
+  </div>
+  <div class="grid" style="margin-top:1.5rem">
+    <div class="tarjeta" data-cat-drop="comunicar"><div class="icono">💬</div><h3>Comunicar</h3><small id="c-comunicar"></small></div>
+    <div class="tarjeta" data-cat-drop="cocrear"><div class="icono">✏️</div><h3>Co-crear</h3><small id="c-cocrear"></small></div>
+    <div class="tarjeta" data-cat-drop="organizar"><div class="icono">📋</div><h3>Organizar</h3><small id="c-organizar"></small></div>
+  </div>
+  <div class="resp" id="resp-clasifica"></div>
+</section>
+
+<!-- ============ 6. DEMO ============ -->
+<section class="slide">
+  <h2>👀 Demo: dos personas, un mismo documento</h2>
+  <p>Observen el cursor de otra persona moverse mientras escribe.</p>
+  <div class="pasos">
+    <div class="paso"><b>1</b>Abrir el documento</div>
+    <div class="paso"><b>2</b>Escribir a la vez</div>
+    <div class="paso"><b>3</b>Ver el historial</div>
+  </div>
+  <p style="margin-top:1.5rem;font-size:1rem;opacity:.8">Sin internet: el docente muestra un video de 30 s.</p>
+  <a class="btn" href="#" data-link="docs" target="_blank">📄 Abrir documento</a>
+</section>
+
+<!-- ============ 7. RETO ============ -->
+<section class="slide">
+  <h2>🏆 Reto: Del caos al orden</h2>
+  <p>Organicen la <b>Feria Universitaria</b> en equipos de 4.</p>
+  <div class="pasos">
+    <div class="paso"><b>1</b>Asignen roles</div>
+    <div class="paso"><b>2</b>Elijan herramienta</div>
+    <div class="paso"><b>3</b>Completen el tablero</div>
+    <div class="paso"><b>4</b>Expliquen en 30 s</div>
+  </div>
+  <p style="margin-top:1.5rem">Tiempo: <b>8 minutos</b> ⏱️</p>
+  <a class="btn naranja" href="#" data-link="padlet" target="_blank">🧱 Abrir el tablero</a>
+</section>
+
+<!-- ============ 8. RÚBRICA ============ -->
+<section class="slide">
+  <h2>⭐ ¿Cómo sabemos que colaboramos?</h2>
+  <table class="rubrica">
+    <tr><th>Indicador</th><th>Empezando</th><th>En camino</th><th>¡Lo logramos!</th></tr>
+    <tr><td>Elige herramienta con razón</td><td>🌱</td><td>🌿</td><td>🌳</td></tr>
+    <tr><td>Asigna responsable y fecha</td><td>🌱</td><td>🌿</td><td>🌳</td></tr>
+    <tr><td>Justifica con evidencia</td><td>🌱</td><td>🌿</td><td>🌳</td></tr>
+  </table>
+</section>
+
+<!-- ============ 9. TICKET ============ -->
+<section class="slide">
+  <h2>🎫 Ticket de salida</h2>
+  <div class="caja"><p>En una frase: ¿qué herramienta usarías este semestre, para qué y por qué esa?</p></div>
+  <a class="btn verde" href="#" data-link="forms" target="_blank">📝 Responder en el formulario</a>
+  <a class="btn morado" href="#" data-link="padlet" target="_blank">🧱 Escribir en el Padlet</a>
+</section>
+
+<!-- ============ 10. CIERRE ============ -->
+<section class="slide">
+  <div class="emoji">🌟</div>
+  <h2>La mejor herramienta no es la más famosa.</h2>
+  <p>Es la que tu equipo <b>usa con criterio</b>.</p>
+  <p style="margin-top:1.5rem;opacity:.8">Prof. [Tu Nombre]</p>
+</section>
+
+<div class="barra" id="barra"></div>
+<div class="nav">
+  <button id="prev">◀</button>
+  <span id="contador"></span>
+  <button id="next">▶</button>
+</div>
+
+<script>
+  // ----- Enlaces: se leen desde :root -----
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim().replace(/"/g,'');
+  document.querySelectorAll('[data-link]').forEach(a=>{
+    a.href = cssVar('--' + a.dataset.link === '--docs' ? '--docs' : '--' + a.dataset.link);
+  });
+
+  // ----- Navegación -----
+  const slides = [...document.querySelectorAll('.slide')];
+  let i = 0;
+  function mostrar(n){
+    i = Math.max(0, Math.min(n, slides.length-1));
+    slides.forEach((s,k)=>s.classList.toggle('activa', k===i));
+    document.getElementById('barra').style.width = ((i+1)/slides.length*100)+'%';
+    document.getElementById('contador').textContent = (i+1)+' / '+slides.length;
+  }
+  document.getElementById('next').onclick = ()=>mostrar(i+1);
+  document.getElementById('prev').onclick = ()=>mostrar(i-1);
+  document.addEventListener('keydown', e=>{
+    if(['ArrowRight',' ','PageDown'].includes(e.key)) mostrar(i+1);
+    if(['ArrowLeft','PageUp'].includes(e.key)) mostrar(i-1);
+  });
+  mostrar(0);
+
+  // ----- Votación -----
+  document.querySelectorAll('[data-votar]').forEach(t=>{
+    t.onclick = ()=>{
+      const r = {A:'💬 Quizá rápido, pero la información se pierde en el chat.',
+                 B:'📝 ¡Muy bien! Todos ven la misma versión en tiempo real.',
+                 C:'📋 ¡Excelente! Organizar tareas y fechas evita olvidos.'};
+      document.getElementById('resp-votar').textContent = r[t.dataset.votar];
+      confeti();
+    };
+  });
+
+  // ----- Clasificación (tocar app → tocar categoría) -----
+  let appSel = null;
+  const aciertos = {comunicar:0, cocrear:0, organizar:0};
+  document.querySelectorAll('#apps .tarjeta').forEach(t=>{
+    t.onclick = ()=>{
+      document.querySelectorAll('#apps .tarjeta').forEach(x=>x.classList.remove('sel'));
+      t.classList.add('sel'); appSel = t;
+    };
+  });
+  document.querySelectorAll('[data-cat-drop]').forEach(t=>{
+    t.onclick = ()=>{
+      if(!appSel) { document.getElementById('resp-clasifica').textContent='Primero toca una app 👆'; return; }
+      const ok = appSel.dataset.cat === t.dataset.catDrop;
+      const etiqueta = appSel.dataset.app;
+      t.classList.add(ok?'ok':'mal');
+      document.getElementById('c-'+t.dataset.catDrop).textContent += (ok?'✔ ':'✘ ')+etiqueta+' ';
+      document.getElementById('resp-clasifica').textContent =
+        ok ? '¡Correcto! '+etiqueta+' va aquí.' : etiqueta+' no es de esta categoría. ¡Intenta otra!';
+      if(ok){ appSel.style.opacity=.4; appSel.style.pointerEvents='none'; confeti(); }
+      appSel.classList.remove('sel'); appSel = null;
+    };
+  });
+
+  // ----- Confeti -----
+  function confeti(){
+    const c = document.createElement('div'); c.className='confeti';
+    const cols=['#fde047','#60a5fa','#4ade80','#f472b6','#fb923c'];
+    for(let k=0;k<60;k++){
+      const p=document.createElement('i');
+      p.style.left=Math.random()*100+'%';
+      p.style.background=cols[k%cols.length];
+      p.style.animationDelay=Math.random()*.5+'s';
+      c.appendChild(p);
+    }
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3500);
+  }
+</script>
+</body>
+</html>
