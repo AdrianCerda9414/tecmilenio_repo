@@ -78,7 +78,7 @@
 
   /* Preguntas en vivo (Sí / No) */
   .pfila{display:grid;grid-template-columns:1fr 1.2fr auto;gap:.8rem;align-items:center;
-         width:min(900px,100%);margin:.5rem 0;text-align:left;font-size:1.05rem}
+         width:min(900px,100%);margin:.45rem 0;text-align:left;font-size:1.02rem}
   .pfila .etq{font-weight:700}
   .pfila .pista{height:30px;display:flex}
   .pfila .pista>div{transition:flex-grow .5s ease;height:100%}
@@ -101,8 +101,9 @@
   .cat{background:var(--tarjeta);border:1px solid var(--borde);border-radius:16px;padding:.8rem;
        min-height:110px;text-align:left}
   .cat h4{color:var(--verde-claro);margin-bottom:.4rem}
+  .cat .lista-cat{display:flex;flex-wrap:wrap;gap:.3rem}
   .pill{display:inline-block;background:#fff;color:var(--azul);border-radius:999px;
-        padding:.2rem .6rem;margin:.2rem;font-weight:700;font-size:.9rem}
+        padding:.25rem .7rem;font-weight:700;font-size:.95rem}
 
   /* Resultados: podio y tabla */
   .podio{display:flex;align-items:flex-end;justify-content:center;gap:1rem;margin:.8rem 0;min-height:230px}
@@ -159,8 +160,14 @@
   .btn{display:inline-block;padding:.75rem 1.3rem;border-radius:999px;border:none;font-size:1.05rem;
        font-weight:700;cursor:pointer;color:#fff;background:var(--verde);text-decoration:none}
   .btn.azul{background:var(--azul-claro)} .btn.verde-oscuro{background:#14532d}
+  .btn.rojo{background:#b91c1c}
   .btn:hover{filter:brightness(1.12)}
   .btn:disabled{opacity:.4;cursor:default}
+
+  /* Pantalla final del alumno */
+  .fin-overlay{display:none;position:fixed;inset:0;background:#0d1533;align-items:center;
+               justify-content:center;padding:2rem;text-align:center;z-index:50}
+  .fin-overlay.on{display:flex}
 
   /* Modal de video */
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;
@@ -309,9 +316,9 @@ const CONFIG = {
     <div class="apps" id="grid-docente"></div>
     <div class="detalle" id="detalle-docente"></div>
     <div class="cats">
-      <div class="cat" data-cat="comunicar"><h4>💬 Comunicar</h4></div>
-      <div class="cat" data-cat="cocrear"><h4>✏️ Co-crear</h4></div>
-      <div class="cat" data-cat="organizar"><h4>📋 Organizar</h4></div>
+      <div class="cat" data-cat="comunicar"><h4>💬 Comunicar</h4><div class="lista-cat"></div></div>
+      <div class="cat" data-cat="cocrear"><h4>✏️ Co-crear</h4><div class="lista-cat"></div></div>
+      <div class="cat" data-cat="organizar"><h4>📋 Organizar</h4><div class="lista-cat"></div></div>
     </div>
     <div class="tally" id="tally-clasif"></div>
   </section>
@@ -394,7 +401,6 @@ const CONFIG = {
     <h3>Ensayo del ciclo del agua</h3>
     <p>Escribe tu nombre arriba y elige tu integrante.</p>
     <div id="roles-alumno"></div>
-    <div class="botones"><a class="btn azul lnk-docs" target="_blank" rel="noopener">📄 Abrir documento</a></div>
     <div class="msg" id="msg-avance"></div>
   </div>
 
@@ -409,11 +415,28 @@ const CONFIG = {
     <div class="detalle" id="detalle-alumno"></div>
   </div>
 
+  <div class="act bloque" data-act="docs">
+    <h3>Editar el documento</h3>
+    <div id="docs-alumno"></div>
+  </div>
+
   <div class="act bloque" data-act="palabra">
     <h3>¿Qué te llevas de tu clase de hoy?</h3>
     <input id="palabra" placeholder="Una palabra o una frase completa" maxlength="120">
     <div class="botones"><button class="btn" id="btn-palabra">Enviar</button></div>
     <div class="msg" id="msg-palabra"></div>
+  </div>
+
+  <div class="bloque" id="bloque-fin">
+    <button class="btn rojo" id="btn-fin" style="width:100%">✖ Terminar participación y cerrar</button>
+  </div>
+</div>
+
+<!-- Pantalla final del alumno -->
+<div class="fin-overlay" id="fin">
+  <div>
+    <h2>¡Gracias por participar! 🙌</h2>
+    <p>Puedes cerrar esta pestaña.</p>
   </div>
 </div>
 
@@ -438,12 +461,13 @@ const DIAPOS = [
   {t:'Preguntas',      act:'decision'},
   {t:'Herramientas',   act:'clasif'},
   {t:'Resultados',     act:null},
-  {t:'Google Docs',    act:null},
+  {t:'Google Docs',    act:'docs'},
   {t:'Palabras',       act:'palabra'},
   {t:'Cierre',         act:null}
 ];
 // Índice (base 0) de la diapositiva "Resultados". Los estados solo se muestran desde aquí.
 const IDX_RES = 8;
+const IDX_HERRAMIENTAS = 7;
 
 const OPC = {
   A:'💬 Chat de WhatsApp',
@@ -505,11 +529,15 @@ const APPS = [
    limite:'No registra avances ni quién hizo qué; solo fechas.'}
 ];
 
-// Preguntas Sí/No: todas orientan a escribir el ensayo en Google Docs
+// Preguntas Sí/No: las tres primeras se contestan "Sí" y las tres últimas "No".
+// Al contestar todas, se muestra la herramienta recomendada: Google Docs.
 const PREG = [
-  {q:'¿Vamos a escribir un texto entre varios?',              si:'cocrear'},
-  {q:'¿Necesitamos editarlo al mismo tiempo?',               si:'cocrear'},
-  {q:'¿Queremos ver quién cambió qué y dejar comentarios?',  si:'cocrear'}
+  {q:'¿Vamos a escribir un texto entre varios?',             ok:'si'},
+  {q:'¿Necesitamos editarlo al mismo tiempo?',              ok:'si'},
+  {q:'¿Queremos ver quién cambió qué y dejar comentarios?', ok:'si'},
+  {q:'¿Vamos a realizar un cartel?',                        ok:'no'},
+  {q:'¿Vamos a realizar un video?',                         ok:'no'},
+  {q:'¿Queremos agendar una reunión un día de lluvia?',     ok:'no'}
 ];
 
 // Asignaciones de rol (se llena desde Firebase)
@@ -694,6 +722,7 @@ if (!esAlumno){
     $('contador').textContent = (actual + 1) + ' / ' + slidesT.length;
     $('logo-fijo').style.visibility = actual === 0 ? 'hidden' : 'visible';
     db.ref(R + '/estado').set({slide: actual});
+    if (actual === IDX_HERRAMIENTAS) renderClasif();
     renderResultados();
   }
   $('next').onclick = () => irA(actual + 1);
@@ -773,9 +802,9 @@ if (!esAlumno){
   });
 
   // Preguntas en vivo (diapositiva 7)
-  // La herramienta recomendada aparece solo cuando hay al menos una respuesta
+  // La herramienta recomendada aparece cuando hay respuestas a todas las preguntas
   db.ref(R + '/respuestas').on('value', s => {
-    $('tally-rec').style.display = s.numChildren() > 0 ? 'block' : 'none';
+    $('tally-rec').style.display = s.numChildren() >= PREG.length ? 'block' : 'none';
     const c = PREG.map(() => ({si:0, no:0}));
     s.forEach(x => {
       const v = x.val();
@@ -799,7 +828,8 @@ if (!esAlumno){
   // Herramientas (diapositiva 8)
   pintarGrid($('grid-docente'), $('detalle-docente'), 'docente');
 
-  // Recuadros de categoría: solo aparecen las herramientas clasificadas correctamente
+  // Recuadros de categoría: solo aparecen las herramientas clasificadas correctamente.
+  // Se reconstruyen completos en cada actualización.
   function renderClasif(){
     const lista = {comunicar:new Set(), cocrear:new Set(), organizar:new Set()};
     let ok = 0;
@@ -809,9 +839,10 @@ if (!esAlumno){
       if (v.ok){ ok++; lista[a.cat].add(a.nombre); }
     });
     Object.keys(lista).forEach(k => {
-      const cont = document.querySelector(`.cat[data-cat="${k}"]`);
-      cont.querySelectorAll('.pill').forEach(p => p.remove());
-      lista[k].forEach(nombre => cont.appendChild(el('span', 'pill', '✔ ' + nombre)));
+      const caja = document.querySelector(`.cat[data-cat="${k}"] .lista-cat`);
+      if (!caja) return;
+      caja.innerHTML = '';
+      lista[k].forEach(nombre => caja.appendChild(el('span', 'pill', '✔ ' + nombre)));
     });
     $('tally-clasif').textContent = `Clasificaciones: ${clasifData.length} · Correctas: ${ok}`;
   }
@@ -932,10 +963,9 @@ if (esAlumno){
     c.innerHTML = '';
     const pend = PREG.findIndex((_, i) => !leer('resp-' + i));
     if (pend === -1){
-      const si = PREG.filter((_, i) => leer('resp-' + i) === 'si').length;
-      c.appendChild(el('p', '', 'Mejor opción para escribir el ensayo:'));
-      c.appendChild(el('h3', '', '⭐ Google Docs'));
-      c.appendChild(el('p', '', `Respondiste Sí en ${si} de ${PREG.length}. Docs permite escribir y editar el mismo texto al mismo tiempo, con historial de cambios.`));
+      c.appendChild(el('p', '', 'Gracias por responder. Según tus respuestas:'));
+      c.appendChild(el('h3', '', '⭐ Herramienta recomendada: Google Docs'));
+      c.appendChild(el('p', '', 'Docs permite escribir y editar el mismo texto al mismo tiempo, con historial de cambios.'));
       return;
     }
     const p = PREG[pend];
@@ -990,6 +1020,28 @@ if (esAlumno){
     c.appendChild(b);
   }
 
+  // Diapositiva Google Docs: número de integrante y aviso de instalar la app
+  function pintarDocs(){
+    const c = $('docs-alumno');
+    c.innerHTML = '';
+    const miRol = leer('mi-rol');
+    if (!miRol){
+      c.appendChild(el('p', '', 'Primero elige tu integrante en la diapositiva del ensayo.'));
+      return;
+    }
+    const i = ROLES.findIndex(r => r.id === miRol);
+    c.appendChild(el('p', 'frase-alumno', `Tu integrante es el número ${i + 1}.`));
+    c.appendChild(el('p', '', 'Para entrar a editar el documento necesitas descargar la aplicación de Google Docs e iniciar sesión con tu cuenta.'));
+    const a = el('a', 'btn azul', '📄 Abrir documento');
+    a.target = '_blank';
+    a.rel = 'noopener';
+    enlace(a, CONFIG.docs);
+    const wrap = el('div', 'botones');
+    wrap.appendChild(a);
+    c.appendChild(wrap);
+    c.appendChild(el('p', 'ayuda', 'Cuando termines tu parte, márcala en la diapositiva del ensayo.'));
+  }
+
   function pintarActivo(){
     const d = DIAPOS[SLIDE] || DIAPOS[0];
     $('alumno-estado').textContent = `Diapositiva ${SLIDE + 1} de ${DIAPOS.length}: ${d.t}`;
@@ -999,6 +1051,7 @@ if (esAlumno){
     if (d.act === 'decision') pintarPreguntas();
     if (d.act === 'ensayo') pintarRoles();
     if (d.act === 'votos') pintarVotos();
+    if (d.act === 'docs') pintarDocs();
   }
 
   // Al borrar registros cambia "ver": todo vuelve a empezar
@@ -1017,6 +1070,7 @@ if (esAlumno){
     ASIG = [];
     s.forEach(x => ASIG.push(x.val()));
     pintarRoles();
+    pintarDocs();
   });
 
   // Diapositiva actual, controlada por el docente
@@ -1035,6 +1089,14 @@ if (esAlumno){
     setFlag('palabra');
     $('palabra').value = '';
     $('msg-palabra').textContent = '¡Gracias! 🙌';
+  };
+
+  // Terminar participación: confirma, muestra pantalla final e intenta cerrar la pestaña
+  $('btn-fin').onclick = () => {
+    if (!confirm('¿Seguro que quieres terminar tu participación?')) return;
+    $('alumno').style.display = 'none';
+    $('fin').classList.add('on');
+    window.close();
   };
 }
 </script>
