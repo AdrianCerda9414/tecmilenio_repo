@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:,">
-<title>¿Trabajamos en equipo o solo nos repartimos tareas?</title>
+<title>Herramientas de trabajo colaborativo digital</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -24,28 +24,28 @@
   body.alumno{overflow:auto;height:auto;min-height:100%;padding:1rem}
   body.alumno #docente{display:none}
   body:not(.alumno) #alumno{display:none}
-  body.alumno .nav,body.alumno .qr-mini,body.alumno .barra{display:none}
+  body.alumno .nav,body.alumno .barra{display:none}
 
-  /* Logotipo fijo (docente) */
+  /* Logotipos */
   .logo-fijo{position:fixed;top:12px;right:16px;height:50px;background:#fff;border-radius:12px;
              padding:.3rem .7rem;z-index:20}
+  .logo-centro{height:120px;background:#fff;border-radius:18px;padding:.6rem 1.2rem;margin-bottom:1rem}
 
   /* Diapositivas (docente) */
   .slide{display:none;position:fixed;inset:0;padding:5vh 5vw;flex-direction:column;
          align-items:center;text-align:center;overflow:auto;animation:entrar .5s ease}
   .slide.activa{display:flex}
   @keyframes entrar{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-  h1{font-size:clamp(2rem,5vw,3.8rem);line-height:1.1;margin-bottom:.4em}
+  h1{font-size:clamp(2rem,5vw,3.6rem);line-height:1.1;margin-bottom:.4em}
   h2{font-size:clamp(1.7rem,4.2vw,2.8rem);margin-bottom:.5em}
   h3{font-size:1.3rem;margin-bottom:.4em}
   p{font-size:clamp(1.05rem,2.2vw,1.4rem);line-height:1.5;margin:.4em 0}
   li{font-size:clamp(1rem,2vw,1.25rem);line-height:1.5;margin:.3rem 0 .3rem 1.2rem;text-align:left}
   .emoji{font-size:clamp(3rem,7vw,5rem)}
-  .portada{display:grid;grid-template-columns:1.4fr 1fr;gap:4vw;align-items:center;width:min(1100px,100%)}
-  .portada>div:first-child{text-align:left}
-  .qr-box{background:#fff;border-radius:24px;padding:1.2rem;text-align:center;color:var(--azul)}
-  .qr-box small{display:block;margin-top:.6rem;font-weight:700;font-size:1rem}
-  .qr-box canvas,.qr-box img{display:block;margin:auto}
+  .portada-c{display:flex;flex-direction:column;align-items:center;gap:.3rem}
+  .qr-centro{background:#fff;border-radius:24px;padding:1rem 1.2rem;color:var(--azul);margin-top:1rem}
+  .qr-centro small{display:block;margin-top:.5rem;font-weight:700;font-size:1rem}
+  .qr-centro canvas,.qr-centro img{display:block;margin:auto}
 
   .caja{background:var(--tarjeta);border:1px solid var(--borde);border-radius:22px;
         padding:1.1rem 1.4rem;margin-top:.8rem;width:min(820px,100%)}
@@ -60,8 +60,7 @@
   .barras{width:min(800px,100%);margin-top:1rem}
   .barra-fila{display:grid;grid-template-columns:260px 1fr 60px;gap:.8rem;align-items:center;
               margin:.6rem 0;font-size:1.1rem;text-align:left}
-  .pista{display:flex;background:var(--tarjeta);border-radius:999px;height:34px;overflow:hidden;border:1px solid var(--borde)}
-  .pista>div{transition:flex-grow .5s ease,width .5s ease;height:100%}
+  .pista{background:var(--tarjeta);border-radius:999px;height:34px;overflow:hidden;border:1px solid var(--borde)}
   .relleno{height:100%;width:0;transition:width .6s ease;border-radius:999px}
   .conteo{font-weight:800;color:#fde047}
   .tally{margin-top:1rem;font-size:1.1rem;font-weight:700;color:#fde047}
@@ -70,7 +69,8 @@
   .pfila{display:grid;grid-template-columns:1fr 1.2fr auto;gap:.8rem;align-items:center;
          width:min(900px,100%);margin:.5rem 0;text-align:left;font-size:1.05rem}
   .pfila .etq{font-weight:700}
-  .pfila .pista{height:30px}
+  .pfila .pista{height:30px;display:flex}
+  .pfila .pista>div{transition:flex-grow .5s ease;height:100%}
   .si{background:var(--verde-claro)} .no{background:var(--azul-claro)}
 
   /* Herramientas */
@@ -92,6 +92,20 @@
   .cat h4{color:var(--verde-claro);margin-bottom:.4rem}
   .pill{display:inline-block;background:#fff;color:var(--azul);border-radius:999px;
         padding:.2rem .6rem;margin:.2rem;font-weight:700;font-size:.9rem}
+
+  /* Resultados: podio y tabla */
+  .podio{display:flex;align-items:flex-end;justify-content:center;gap:1rem;margin:.8rem 0;min-height:230px}
+  .puesto{background:var(--tarjeta);border:1px solid var(--borde);border-radius:16px 16px 0 0;
+          width:190px;padding:.8rem;display:flex;flex-direction:column;justify-content:flex-end}
+  .puesto b{font-size:2rem}
+  .puesto small{font-weight:700;font-size:1rem}
+  .puesto.p1{height:230px;background:#fde047;color:var(--azul)}
+  .puesto.p2{height:180px;background:#cbd5e1;color:var(--azul)}
+  .puesto.p3{height:140px;background:#fdba74;color:var(--azul)}
+  .tab-res{border-collapse:collapse;width:min(800px,100%);margin-top:.6rem;font-size:1.05rem}
+  .tab-res th,.tab-res td{padding:.45rem .7rem;border-bottom:1px solid var(--borde);text-align:left}
+  .tab-res th{color:var(--verde-claro)}
+  .tab-res tr.error td{color:#fecaca;font-weight:700}
 
   /* Roles del ensayo */
   .roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;width:min(1000px,100%);margin-top:1rem}
@@ -133,15 +147,11 @@
   .nav button{background:rgba(255,255,255,.15);color:#fff;border:1px solid var(--borde);border-radius:12px;
               padding:.5rem .9rem;font-size:1rem;cursor:pointer}
   .nav span{font-size:.95rem;opacity:.85;min-width:56px;text-align:center}
-  .qr-mini{position:fixed;bottom:14px;left:14px;background:#fff;border-radius:14px;padding:.5rem;z-index:5}
-  .qr-mini::after{content:"Participa";display:block;text-align:center;color:var(--azul);font-size:.75rem;font-weight:700}
   .confeti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:10}
   .confeti i{position:absolute;top:-5%;width:11px;height:11px;border-radius:3px;animation:caer 2.6s linear forwards}
   @keyframes caer{to{transform:translateY(110vh) rotate(720deg)}}
 
   @media (max-width:700px){
-    .portada{grid-template-columns:1fr}
-    .portada>div:first-child{text-align:center}
     .dos,.roles,.cats{grid-template-columns:1fr}
     .pfila{grid-template-columns:1fr}
     .barra-fila{grid-template-columns:1fr 50px}
@@ -150,6 +160,7 @@
     .app small{font-size:.6rem}
     .chip{width:44px;height:44px;font-size:1.1rem}
     .logo-fijo{height:36px}
+    .puesto{width:110px}
   }
 </style>
 </head>
@@ -176,29 +187,27 @@ const CONFIG = {
 <!-- ============ VISTA DOCENTE ============ -->
 <div id="docente">
 
-  <img class="logo-fijo" id="logo-fijo" alt="Universidad Tecmilenio">
+  <img class="logo-fijo" id="logo-fijo" alt="Universidad Tecmilenio" style="visibility:hidden">
 
   <!-- 1 · Portada -->
   <section class="slide activa">
-    <div class="portada">
-      <div>
-        <div class="emoji">🤝💻</div>
-        <h1>¿Trabajamos en equipo o solo nos repartimos tareas?</h1>
-        <p>Escaneen el código y entren desde su celular.</p>
-      </div>
-      <div class="qr-box">
-        <div id="qr-grande"></div>
-        <small>Escanea para participar 📱</small>
-      </div>
+    <div class="portada-c">
+      <img class="logo-centro" id="logo-centro" alt="Universidad Tecmilenio">
+      <h1>Herramientas de trabajo colaborativo digital</h1>
+      <p><b>Dr. J. Adrián Cerda R.</b></p>
+      <p style="opacity:.8">Clase muestra</p>
     </div>
   </section>
 
-  <!-- 2 · Dilema -->
+  <!-- 2 · Dilema + QR centrado -->
   <section class="slide">
     <h2>🗓️ Dilema: ¿qué harían primero?</h2>
     <p>Cinco compañeros, cinco horarios distintos y la entrega es el viernes.</p>
     <div class="barras" id="barras"></div>
-    <p style="opacity:.8;margin-top:1rem">Voten desde su celular. Las barras cambian en vivo.</p>
+    <div class="qr-centro">
+      <div id="qr-grande"></div>
+      <small>Escanea para participar 📱</small>
+    </div>
   </section>
 
   <!-- 3 · WhatsApp -->
@@ -218,7 +227,7 @@ const CONFIG = {
         <ul>
           <li>Los acuerdos se pierden entre cientos de mensajes</li>
           <li>No tiene tareas con responsable y fecha</li>
-          <li>No permite editar un mismo texto a la vez</li>
+          <li>No permite escribir un mismo texto a la vez</li>
           <li>Mezcla lo personal con lo escolar</li>
         </ul>
       </div>
@@ -237,7 +246,7 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 5 · Ensayo (define la tarea antes de elegir app) -->
+  <!-- 5 · Ensayo -->
   <section class="slide">
     <h2>✍️ Actividad: ensayo del ciclo del agua</h2>
     <p>Escriban un breve ensayo en equipo. Cada integrante escribe su parte y la marca en su celular.</p>
@@ -268,7 +277,16 @@ const CONFIG = {
     <div class="tally" id="tally-clasif"></div>
   </section>
 
-  <!-- 8 · Google Docs -->
+  <!-- 8 · Resultados -->
+  <section class="slide">
+    <h2>📊 Resultados de la clasificación</h2>
+    <h3>🏅 Podio de aciertos</h3>
+    <div class="podio" id="res-podio"></div>
+    <div id="res-tabla" style="width:100%;display:flex;justify-content:center"></div>
+    <div class="tally" id="res-refuerzo"></div>
+  </section>
+
+  <!-- 9 · Google Docs -->
   <section class="slide">
     <h2>📝 Google Docs: escribir juntos</h2>
     <div class="pasos">
@@ -280,7 +298,7 @@ const CONFIG = {
     <p style="opacity:.75;margin-top:1rem;font-size:1rem">Sin internet: muestra un video de 30 s.</p>
   </section>
 
-  <!-- 9 · Palabras (¿qué te llevas de hoy?) -->
+  <!-- 10 · Palabras -->
   <section class="slide">
     <h2>☁️ ¿Qué te llevas de hoy?</h2>
     <p>Una palabra o idea por persona. Aparece en vivo con quien la escribió.</p>
@@ -288,12 +306,12 @@ const CONFIG = {
     <div style="margin-top:.8rem"><a class="btn verde-oscuro" id="lnk-forms" target="_blank" rel="noopener">📝 Ticket de salida</a></div>
   </section>
 
-  <!-- 10 · Cierre -->
+  <!-- 11 · Cierre -->
   <section class="slide">
     <div class="emoji">🌟</div>
     <h2>La mejor herramienta no es la más famosa.</h2>
     <p>Es la que tu equipo <b>usa con criterio</b>.</p>
-    <p style="margin-top:1.4rem;opacity:.8">Prof. [Tu Nombre]</p>
+    <p style="margin-top:1.4rem;opacity:.8">Dr. J. Adrián Cerda R.</p>
   </section>
 
   <div class="barra" id="barra"></div>
@@ -303,14 +321,13 @@ const CONFIG = {
     <button id="next">▶</button>
     <button id="reset" title="Borrar registros y empezar de nuevo">⟲</button>
   </div>
-  <div class="qr-mini"><div id="qr-mini"></div></div>
 </div>
 
 <!-- ============ VISTA ALUMNO ============ -->
 <div id="alumno">
   <h2>Participa 📱</h2>
   <p class="estado" id="alumno-estado">Conectando…</p>
-  <input id="nombre" placeholder="Tu nombre (opcional)" maxlength="30">
+  <input id="nombre" placeholder="Tu nombre (necesario para aparecer en el podio)" maxlength="30">
 
   <div class="bloque" id="espera">
     <p>Mira la pantalla 👀 La actividad aparece cuando el docente la abra.</p>
@@ -359,7 +376,7 @@ if (esAlumno) document.body.classList.add('alumno');
 const $ = id => document.getElementById(id);
 const linkAlumno = location.href.split('?')[0] + '?p=1';
 
-// Una entrada por diapositiva, en el mismo orden que las secciones del docente
+// Una entrada por diapositiva docente, en el mismo orden (11 en total)
 const DIAPOS = [
   {t:'Portada',        act:null},
   {t:'Dilema',         act:'votos'},
@@ -368,6 +385,7 @@ const DIAPOS = [
   {t:'Ensayo',         act:'ensayo'},
   {t:'Preguntas',      act:'decision'},
   {t:'Herramientas',   act:'clasif'},
+  {t:'Resultados',     act:null},
   {t:'Google Docs',    act:null},
   {t:'Palabras',       act:'palabra'},
   {t:'Cierre',         act:null}
@@ -440,12 +458,11 @@ const PREG = [
 ];
 
 /* ==================== ESTADO POR SESIÓN ==================== */
-// VER cambia al borrar registros; las marcas locales del alumno dependen de VER
 let VER = '0';
-const fkey   = k => `${CONFIG.sala}-${VER}-${k}`;
-const leer   = k => localStorage.getItem(fkey(k));
+const fkey    = k => `${CONFIG.sala}-${VER}-${k}`;
+const leer    = k => localStorage.getItem(fkey(k));
 const setLocal = (k, v) => localStorage.setItem(fkey(k), v);
-const flag   = k => leer(k) === '1';
+const flag    = k => leer(k) === '1';
 const setFlag = k => setLocal(k, '1');
 
 /* ==================== UTILIDADES ==================== */
@@ -493,8 +510,8 @@ function enlace(a, url){
   if (!url || url.includes('REEMPLAZA')) a.style.display = 'none';
   else a.href = url;
 }
-function cargarLogo(){
-  const img = $('logo-fijo');
+function cargarLogo(id){
+  const img = $(id);
   const rutas = ['logo.png','logo.jpg','logo.jpeg','logo.svg','logo.PNG'];
   let k = 0;
   img.onerror = () => { k++; if (k < rutas.length) img.src = rutas[k]; else img.remove(); };
@@ -533,7 +550,10 @@ function mostrarDetalle(a, cont, det, alumno){
 function clasificar(a, cat, cont, det){
   const ok = a.cat === cat;
   setFlag('clasif-' + a.id);
-  db.ref(R + '/clasif').push({app: a.id, cat, ok, t: Date.now()});
+  db.ref(R + '/clasif').push({
+    app: a.id, cat, ok, t: Date.now(),
+    n: $('nombre').value.trim() || ''
+  });
   det.querySelector('.botones')?.remove();
   det.appendChild(el('p', '', ok
     ? '✔ ¡Correcto! Va en ' + CATS[a.cat] + '.'
@@ -549,9 +569,9 @@ const R = 'sala/' + CONFIG.sala;
 
 /* ==================== VISTA DOCENTE ==================== */
 if (!esAlumno){
-  cargarLogo();
-  qr($('qr-grande'), linkAlumno, 220);
-  qr($('qr-mini'), linkAlumno, 96);
+  cargarLogo('logo-fijo');
+  cargarLogo('logo-centro');
+  qr($('qr-grande'), linkAlumno, 200);
   document.querySelectorAll('.lnk-docs').forEach(a => enlace(a, CONFIG.docs));
   enlace($('lnk-forms'), CONFIG.forms);
 
@@ -562,6 +582,8 @@ if (!esAlumno){
     slidesT.forEach((s, k) => s.classList.toggle('activa', k === actual));
     $('barra').style.width = ((actual + 1) / slidesT.length * 100) + '%';
     $('contador').textContent = (actual + 1) + ' / ' + slidesT.length;
+    const lf = $('logo-fijo');
+    if (lf) lf.style.visibility = actual === 0 ? 'hidden' : 'visible';
     db.ref(R + '/estado').set({slide: actual});
   }
   $('next').onclick = () => irA(actual + 1);
@@ -619,7 +641,7 @@ if (!esAlumno){
     $('tally-avance').textContent = `Roles terminados: ${listos.size} de ${ROLES.length}`;
   });
 
-  // Preguntas en vivo (diapositiva 6): barra Sí / No por pregunta
+  // Preguntas en vivo (diapositiva 6)
   db.ref(R + '/respuestas').on('value', s => {
     const c = PREG.map(() => ({si:0, no:0}));
     s.forEach(x => {
@@ -641,15 +663,16 @@ if (!esAlumno){
     });
   });
 
-  // Herramientas (diapositiva 7)
+  // Herramientas (diapositiva 7) y resultados (diapositiva 8)
   pintarGrid($('grid-docente'), $('detalle-docente'), false);
-  db.ref(R + '/clasif').on('value', s => {
+
+  let clasifData = [];
+  function renderClasif(){
     const lista = {comunicar:[], cocrear:[], organizar:[]};
-    let total = 0, ok = 0;
-    s.forEach(x => {
-      const v = x.val();
-      total++; if (v.ok) ok++;
+    let ok = 0;
+    clasifData.forEach(v => {
       const a = APPS.find(q => q.id === v.app);
+      if (v.ok) ok++;
       if (lista[v.cat] && a) lista[v.cat].push((v.ok ? '✔ ' : '✘ ') + a.nombre);
     });
     Object.keys(lista).forEach(k => {
@@ -657,10 +680,81 @@ if (!esAlumno){
       cont.querySelectorAll('.pill').forEach(p => p.remove());
       lista[k].forEach(nombre => cont.appendChild(el('span', 'pill', nombre)));
     });
-    $('tally-clasif').textContent = `Clasificaciones: ${total} · Correctas: ${ok}`;
+    $('tally-clasif').textContent = `Clasificaciones: ${clasifData.length} · Correctas: ${ok}`;
+  }
+  function renderResultados(){
+    // Aciertos por herramienta
+    const porApp = {};
+    APPS.forEach(a => porApp[a.id] = {n:0, ok:0});
+    // Aciertos por persona (solo quienes escribieron nombre)
+    const porPersona = {};
+    clasifData.forEach(v => {
+      if (porApp[v.app]){ porApp[v.app].n++; if (v.ok) porApp[v.app].ok++; }
+      const nom = (v.n || '').trim();
+      if (nom){
+        porPersona[nom] = porPersona[nom] || {n:nom, ok:0, tot:0};
+        porPersona[nom].tot++;
+        if (v.ok) porPersona[nom].ok++;
+      }
+    });
+
+    // Podio: 2.º a la izquierda, 1.º al centro, 3.º a la derecha
+    const ranking = Object.values(porPersona)
+      .sort((a, b) => b.ok - a.ok || a.tot - b.tot || a.n.localeCompare(b.n))
+      .slice(0, 3);
+    const pod = $('res-podio');
+    pod.innerHTML = '';
+    if (ranking.length === 0){
+      pod.appendChild(el('p', '', 'Aún no hay resultados con nombre. Pidan escribir su nombre antes de clasificar.'));
+    } else {
+      [1, 0, 2].forEach(i => {
+        const r = ranking[i];
+        if (!r) return;
+        const c = el('div', 'puesto p' + (i + 1));
+        c.appendChild(el('b', '', ['🥇','🥈','🥉'][i]));
+        c.appendChild(el('h3', '', r.n));
+        c.appendChild(el('small', '', `${r.ok} de ${r.tot} correctas`));
+        pod.appendChild(c);
+      });
+    }
+
+    // Tabla por herramienta
+    const tabla = el('table', 'tab-res');
+    const head = el('tr');
+    ['Herramienta','Aciertos','Estado'].forEach(h => head.appendChild(el('th', '', h)));
+    tabla.appendChild(head);
+    const conError = [];
+    APPS.forEach(a => {
+      const d = porApp[a.id];
+      const tr = el('tr', d.n > 0 && d.ok < d.n ? 'error' : '');
+      tr.appendChild(el('td', '', a.nombre));
+      tr.appendChild(el('td', '', d.n ? `${d.ok} de ${d.n}` : '—'));
+      let estado;
+      if (!d.n) estado = 'Sin datos';
+      else if (d.ok === d.n) estado = '✔ Dominada';
+      else { estado = `⚠ Refuerzo (${d.n - d.ok} error${d.n - d.ok > 1 ? 'es' : ''})`; conError.push(a.nombre); }
+      tr.appendChild(el('td', '', estado));
+      tabla.appendChild(tr);
+    });
+    $('res-tabla').innerHTML = '';
+    $('res-tabla').appendChild(tabla);
+
+    // Mensaje de cierre
+    const hayDatos = clasifData.length > 0;
+    $('res-refuerzo').textContent = !hayDatos
+      ? 'Esperando clasificaciones.'
+      : conError.length === 0
+        ? '¡Todas las herramientas se clasificaron correctamente!'
+        : 'Reforzar: ' + conError.join(', ') + '.';
+  }
+  db.ref(R + '/clasif').on('value', s => {
+    clasifData = [];
+    s.forEach(x => clasifData.push(x.val()));
+    renderClasif();
+    renderResultados();
   });
 
-  // Palabras (diapositiva 9): cada entrada con quien la escribió
+  // Palabras (diapositiva 10)
   db.ref(R + '/nube').on('value', s => {
     const cont = $('nube');
     cont.innerHTML = '';
@@ -750,7 +844,7 @@ if (esAlumno){
     if (d.act === 'ensayo') pintarRoles();
   }
 
-  // Cuando el docente borra registros cambia "ver": todo vuelve a empezar
+  // Al borrar registros cambia "ver": todo vuelve a empezar
   db.ref(R + '/ver').on('value', s => {
     VER = s.val() || '0';
     $('detalle-alumno').style.display = 'none';
