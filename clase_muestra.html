@@ -49,7 +49,6 @@
 
   /* QR (diapositiva 2) */
   .qr-solo{background:#fff;border-radius:28px;padding:1.6rem 2rem;color:var(--azul);margin-top:1rem}
-  .qr-solo small{display:block;margin-top:.6rem;font-weight:700;font-size:1.2rem}
   .qr-solo canvas,.qr-solo img{display:block;margin:auto}
 
   .caja{background:var(--tarjeta);border:1px solid var(--borde);border-radius:22px;
@@ -114,25 +113,24 @@
   .puesto.p1{height:230px;background:#fde047;color:var(--azul)}
   .puesto.p2{height:180px;background:#cbd5e1;color:var(--azul)}
   .puesto.p3{height:140px;background:#fdba74;color:var(--azul)}
-  .tab-res{border-collapse:collapse;width:min(800px,100%);margin-top:.6rem;font-size:1.05rem}
-  .tab-res th,.tab-res td{padding:.45rem .7rem;border-bottom:1px solid var(--borde);text-align:left}
+  .tab-res{border-collapse:collapse;width:min(560px,100%);margin-top:.6rem;font-size:1.1rem}
+  .tab-res th,.tab-res td{padding:.5rem .8rem;border-bottom:1px solid var(--borde);text-align:left}
   .tab-res th{color:var(--verde-claro)}
-  .tab-res tr.error td{color:#fecaca;font-weight:700}
+  .tab-res td.conocida{color:var(--verde-claro);font-weight:700}
+  .tab-res td.desconocida{color:#fecaca;font-weight:700}
 
   /* Roles del ensayo */
   .roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;width:min(1000px,100%);margin-top:1rem}
   .rol{background:var(--tarjeta);border:1px solid var(--borde);border-radius:18px;padding:1rem;text-align:left}
   .rol h4{color:var(--verde-claro);font-size:1.1rem;margin-bottom:.3rem}
 
-  /* Palabras en vivo */
-  .nube-lista{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;
+  /* Palabras en vivo: solo texto, sin recuadro */
+  .nube-lista{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6rem 1.4rem;
               width:min(1000px,100%);min-height:200px;margin-top:1rem}
-  .chipw{background:#fff;color:var(--azul);border-radius:14px;padding:.5rem .8rem;margin:.3rem;
-         text-align:center;box-shadow:0 4px 10px rgba(0,0,0,.25);animation:entrar .4s ease;max-width:320px}
-  .chipw b{font-size:1.2rem;font-weight:700}
-  .chipw small{display:block;font-weight:400;opacity:.7;font-size:.8rem}
+  .palabra{font-size:clamp(1.2rem,2.6vw,2rem);font-weight:800;line-height:1.2;
+           text-shadow:0 2px 10px rgba(0,0,0,.45);animation:entrar .5s ease}
 
-  /* Cierre: texto de un solo tamaño y "Gracias" animado */
+  /* Cierre */
   .cierre-frase{font-size:clamp(1.6rem,3.6vw,2.6rem);line-height:1.35;font-weight:400;max-width:900px}
   .gracias{display:flex;gap:.1em;margin-top:1.6rem;font-size:clamp(2.4rem,6vw,4.4rem);font-weight:800}
   .gracias span{display:inline-block;color:var(--verde-claro);animation:rebote 1.4s ease-in-out infinite}
@@ -208,9 +206,10 @@ const CONFIG = {
     messagingSenderId: "954149423520",
     appId: "1:954149423520:web:6958ae056464d36113fcc5"
   },
-  docs:  "https://docs.google.com/document/d/1HYgr5ivAzi-8F6PrBOYFoqcaHlWCWBWWnbmEmxgGiNg/edit?usp=sharing",
-  forms: "https://forms.gle/REEMPLAZA_FORM_ID",
-  video: "demo_docs.mp4"
+  docs:    "https://docs.google.com/document/d/1HYgr5ivAzi-8F6PrBOYFoqcaHlWCWBWWnbmEmxgGiNg/edit?usp=sharing",
+  forms:   "https://forms.gle/REEMPLAZA_FORM_ID",
+  video:   "demo_docs.mp4",
+  docente: "Dr. J. Adrián Cerda R."   // nombre con el que el docente aparece en el podio
 };
 </script>
 
@@ -258,7 +257,7 @@ const CONFIG = {
           <li>Todos ya lo usamos; no hay que instalar nada</li>
           <li>Avisos inmediatos y llamadas rápidas</li>
           <li>Funciona aun con poca señal</li>
-          <li>Integra el uso de encuestas </li>
+          <li>Integra el uso de encuestas</li>
         </ul>
       </div>
       <div class="caja">
@@ -271,10 +270,10 @@ const CONFIG = {
         </ul>
       </div>
     </div>
-    <p style="margin-top:1.2rem">WhatsApp sirve para <b>avisar</b> y ponernos de acuerdo a lo mucho. Pero, para <b>escribir un ensayo juntos</b>, lamentablemente no.  Es decir, cada tarea necesita su propia app.</p>
+    <p style="margin-top:1.2rem">WhatsApp sirve para <b>avisar</b> y ponernos de acuerdo a lo mucho. Pero, para <b>escribir un ensayo juntos</b>, lamentablemente no. Es decir, cada tarea necesita su propia app.</p>
   </section>
 
-  <!-- 5 · Objetivos (vertical) -->
+  <!-- 5 · Objetivos -->
   <section class="slide">
     <h2>🎯 Al final de esta clase podrás:</h2>
     <div class="lista-vert">
@@ -302,10 +301,10 @@ const CONFIG = {
     <div class="tally">Herramienta recomendada: ⭐ Google Docs</div>
   </section>
 
-  <!-- 8 · Herramientas -->
+  <!-- 8 · Herramientas (el docente también clasifica) -->
   <section class="slide">
-    <h2>🧩 Conoce algunas de las herramientas de trabajo colaborativo </h2>
-    <p>Toca cada una para ver para qué sirve. Después, clasificalas según su función.</p>
+    <h2>🧩 Conoce algunas de las herramientas de trabajo colaborativo</h2>
+    <p>Toca cada una para ver para qué sirve y clasifícala según su función. Los alumnos también la clasifican desde su celular.</p>
     <div class="apps" id="grid-docente"></div>
     <div class="detalle" id="detalle-docente"></div>
     <div class="cats">
@@ -345,7 +344,7 @@ const CONFIG = {
   <!-- 11 · Palabras -->
   <section class="slide">
     <h2>☁️ ¿Qué te llevas de tu clase de hoy?</h2>
-    <p>Una palabra o una frase completa. Aparecerá aquí Ok.</p>
+    <p>Una palabra o una frase completa. Aparecerá aquí en vivo.</p>
     <div class="nube-lista" id="nube"></div>
     <div style="margin-top:.8rem"><a class="btn verde-oscuro" id="lnk-forms" target="_blank" rel="noopener">📝 Ticket de salida</a></div>
   </section>
@@ -442,6 +441,8 @@ const DIAPOS = [
   {t:'Palabras',       act:'palabra'},
   {t:'Cierre',         act:null}
 ];
+// Índice (base 0) de la diapositiva "Resultados". Los estados solo se muestran desde aquí.
+const IDX_RES = 8;
 
 const OPC = {
   A:'💬 Chat de WhatsApp',
@@ -516,6 +517,8 @@ const leer     = k => localStorage.getItem(fkey(k));
 const setLocal = (k, v) => localStorage.setItem(fkey(k), v);
 const flag     = k => leer(k) === '1';
 const setFlag  = k => setLocal(k, '1');
+// Marca de clasificación separada para docente y alumnos
+const kClasif  = (modo, id) => (modo === 'docente' ? 'doc-' : '') + 'clasif-' + id;
 
 /* ==================== UTILIDADES ==================== */
 function el(tag, cls, txt){
@@ -569,49 +572,47 @@ function cargarLogo(id){
   img.onerror = () => { k++; if (k < rutas.length) img.src = rutas[k]; else img.remove(); };
   img.src = rutas[0];
 }
-function pintarGrid(cont, det, alumno){
+// Muestra las herramientas; modo = 'alumno' | 'docente'
+function pintarGrid(cont, det, modo){
   cont.innerHTML = '';
   APPS.forEach(a => {
-    const hecha = alumno && flag('clasif-' + a.id);
+    const hecha = flag(kClasif(modo, a.id));
     const c = el('div', 'app' + (hecha ? ' hecha' : ''));
     c.style.borderColor = a.color;
     c.appendChild(logo(a));
     c.appendChild(el('small', '', a.nombre + (hecha ? ' ✔' : '')));
-    c.onclick = () => mostrarDetalle(a, cont, det, alumno);
+    c.onclick = () => mostrarDetalle(a, cont, det, modo);
     cont.appendChild(c);
   });
 }
-function mostrarDetalle(a, cont, det, alumno){
+function mostrarDetalle(a, cont, det, modo){
   det.innerHTML = '';
   det.style.display = 'block';
   det.appendChild(el('h3', '', a.nombre));
   det.appendChild(el('p', '', '📌 Para qué sirve: ' + a.para));
   det.appendChild(el('p', '', '💡 Ejemplo: ' + a.ejemplo));
   det.appendChild(el('p', '', '⚠️ Límite: ' + a.limite));
-  if (!alumno) return;
-  if (flag('clasif-' + a.id)){
+  if (flag(kClasif(modo, a.id))){
     det.appendChild(el('p', '', 'Ya la clasificaste ✅'));
     return;
   }
   det.appendChild(el('p', '', '¿En qué categoría va?'));
   const f = el('div', 'botones');
   Object.keys(CATS).forEach(cat =>
-    f.appendChild(boton(CATS[cat], () => clasificar(a, cat, cont, det))));
+    f.appendChild(boton(CATS[cat], () => clasificar(a, cat, cont, det, modo))));
   det.appendChild(f);
 }
-function clasificar(a, cat, cont, det){
+function clasificar(a, cat, cont, det, modo){
   const ok = a.cat === cat;
-  setFlag('clasif-' + a.id);
-  db.ref(R + '/clasif').push({
-    app: a.id, cat, ok, t: Date.now(),
-    n: $('nombre').value.trim() || ''
-  });
+  setFlag(kClasif(modo, a.id));
+  const nombre = modo === 'docente' ? CONFIG.docente : ($('nombre').value.trim() || '');
+  db.ref(R + '/clasif').push({app: a.id, cat, ok, t: Date.now(), n: nombre});
   det.querySelector('.botones')?.remove();
   det.appendChild(el('p', '', ok
     ? '✔ ¡Correcto! Va en ' + CATS[a.cat] + '.'
     : '✘ Va en ' + CATS[a.cat] + '. Revisa "Para qué sirve".'));
   if (ok) confeti();
-  pintarGrid(cont, det, true);
+  pintarGrid(cont, det, modo);
 }
 
 /* ==================== FIREBASE ==================== */
@@ -627,6 +628,10 @@ if (!esAlumno){
   document.querySelectorAll('.lnk-docs').forEach(a => enlace(a, CONFIG.docs));
   enlace($('lnk-forms'), CONFIG.forms);
 
+  const PALETA = ['#7ED491','#fde047','#ffffff','#60a5fa','#b388eb'];
+  let clasifData = [];
+  let actual = 0;
+
   // Gracias animado (diapositiva 12)
   const gr = $('gracias');
   'Gracias'.split('').forEach((letra, n) => {
@@ -635,7 +640,7 @@ if (!esAlumno){
     gr.appendChild(s);
   });
 
-  // Botones del documento: ver versión actual y descargar .docx
+  // Botones del documento
   const vistaDoc = DOC_ID ? `https://docs.google.com/document/d/${DOC_ID}/preview` : '';
   const descargaDoc = DOC_ID ? `https://docs.google.com/document/d/${DOC_ID}/export?format=docx` : '';
   $('btn-ver-doc').onclick = () => {
@@ -660,8 +665,8 @@ if (!esAlumno){
   $('cerrar-video').onclick = cerrarVideo;
   $('modal-video').onclick = e => { if (e.target.id === 'modal-video') cerrarVideo(); };
 
+  // Navegación y sincronía con los alumnos
   const slidesT = [...document.querySelectorAll('#docente .slide')];
-  let actual = 0;
   function irA(n){
     actual = Math.max(0, Math.min(n, slidesT.length - 1));
     slidesT.forEach((s, k) => s.classList.toggle('activa', k === actual));
@@ -669,11 +674,12 @@ if (!esAlumno){
     $('contador').textContent = (actual + 1) + ' / ' + slidesT.length;
     $('logo-fijo').style.visibility = actual === 0 ? 'hidden' : 'visible';
     db.ref(R + '/estado').set({slide: actual});
+    renderResultados();
   }
   $('next').onclick = () => irA(actual + 1);
   $('prev').onclick = () => irA(actual - 1);
   document.addEventListener('keydown', e => {
-    if (e.target.tagName === 'VIDEO') return;
+    if (e.target.tagName === 'VIDEO' || e.target.tagName === 'INPUT') return;
     if (['ArrowRight',' ','PageDown'].includes(e.key)) { e.preventDefault(); irA(actual + 1); }
     if (['ArrowLeft','PageUp'].includes(e.key)) irA(actual - 1);
   });
@@ -685,6 +691,13 @@ if (!esAlumno){
     }).then(() => irA(0));
   };
   db.ref(R + '/estado').once('value', s => irA(s.val()?.slide ?? 0));
+
+  // Al borrar registros cambia "ver": las marcas del docente también se reinician
+  db.ref(R + '/ver').on('value', s => {
+    VER = s.val() || '0';
+    $('detalle-docente').style.display = 'none';
+    pintarGrid($('grid-docente'), $('detalle-docente'), 'docente');
+  });
 
   // Votación (diapositiva 3)
   Object.keys(OPC).forEach(k => {
@@ -748,10 +761,9 @@ if (!esAlumno){
     });
   });
 
-  // Herramientas (diapositiva 8) y resultados (diapositiva 9)
-  pintarGrid($('grid-docente'), $('detalle-docente'), false);
+  // Herramientas (diapositiva 8)
+  pintarGrid($('grid-docente'), $('detalle-docente'), 'docente');
 
-  let clasifData = [];
   function renderClasif(){
     const lista = {comunicar:[], cocrear:[], organizar:[]};
     let ok = 0;
@@ -767,7 +779,10 @@ if (!esAlumno){
     });
     $('tally-clasif').textContent = `Clasificaciones: ${clasifData.length} · Correctas: ${ok}`;
   }
+
+  // Resultados (diapositiva 9)
   function renderResultados(){
+    const terminada = actual >= IDX_RES;
     const porApp = {};
     APPS.forEach(a => porApp[a.id] = {n:0, ok:0});
     const porPersona = {};
@@ -801,32 +816,35 @@ if (!esAlumno){
       });
     }
 
+    // Tabla de dos columnas: herramienta y estado
+    // Estado: Conocida si la mayoría fue correcta y hubo al menos dos aciertos; si no, Desconocida.
+    // Solo aparece cuando la clasificación terminó (diapositiva Resultados en adelante).
     const tabla = el('table', 'tab-res');
     const head = el('tr');
-    ['Herramienta','Aciertos','Estado'].forEach(h => head.appendChild(el('th', '', h)));
+    ['Herramienta','Estado'].forEach(h => head.appendChild(el('th', '', h)));
     tabla.appendChild(head);
-    const conError = [];
+    let conocidas = 0, desconocidas = 0;
     APPS.forEach(a => {
       const d = porApp[a.id];
-      const tr = el('tr', d.n > 0 && d.ok < d.n ? 'error' : '');
+      let estado = '', clase = '';
+      if (terminada && d.n > 0){
+        const conocida = d.ok >= 2 && d.ok > d.n / 2;
+        estado = conocida ? 'Conocida' : 'Desconocida';
+        clase = conocida ? 'conocida' : 'desconocida';
+        conocida ? conocidas++ : desconocidas++;
+      }
+      const tr = el('tr');
       tr.appendChild(el('td', '', a.nombre));
-      tr.appendChild(el('td', '', d.n ? `${d.ok} de ${d.n}` : '—'));
-      let estado;
-      if (!d.n) estado = 'Sin datos';
-      else if (d.ok === d.n) estado = '✔ Dominada';
-      else { estado = `⚠ Refuerzo (${d.n - d.ok} error${d.n - d.ok > 1 ? 'es' : ''})`; conError.push(a.nombre); }
-      tr.appendChild(el('td', '', estado));
+      tr.appendChild(el('td', clase, estado));
       tabla.appendChild(tr);
     });
     $('res-tabla').innerHTML = '';
     $('res-tabla').appendChild(tabla);
 
-    $('res-refuerzo').textContent = clasifData.length === 0
-      ? 'Esperando clasificaciones.'
-      : conError.length === 0
-        ? '¡Todas las herramientas se clasificaron correctamente!'
-        : 'Reforzar: ' + conError.join(', ') + '.';
+    $('res-refuerzo').textContent = !terminada ? ''
+      : `Conocidas: ${conocidas} · Desconocidas: ${desconocidas}`;
   }
+
   db.ref(R + '/clasif').on('value', s => {
     clasifData = [];
     s.forEach(x => clasifData.push(x.val()));
@@ -834,16 +852,16 @@ if (!esAlumno){
     renderResultados();
   });
 
-  // Palabras (diapositiva 11)
+  // Palabras (diapositiva 11): solo el texto, sin recuadro ni nombre
   db.ref(R + '/nube').on('value', s => {
     const cont = $('nube');
     cont.innerHTML = '';
+    let n = 0;
     s.forEach(ch => {
-      const v = ch.val();
-      const c = el('div', 'chipw');
-      c.appendChild(el('b', '', v.t));
-      c.appendChild(el('small', '', v.a || 'Anónimo'));
-      cont.appendChild(c);
+      const sp = el('span', 'palabra', ch.val().t);
+      sp.style.color = PALETA[n % PALETA.length];
+      n++;
+      cont.appendChild(sp);
     });
   });
 }
@@ -929,7 +947,7 @@ if (esAlumno){
     VER = s.val() || '0';
     $('detalle-alumno').style.display = 'none';
     pintarVotos();
-    pintarGrid($('grid-alumno'), $('detalle-alumno'), true);
+    pintarGrid($('grid-alumno'), $('detalle-alumno'), 'alumno');
     pintarRoles();
     pintarPreguntas();
     pintarActivo();
@@ -947,7 +965,7 @@ if (esAlumno){
     if (flag('palabra')){ $('msg-palabra').textContent = 'Ya enviaste tu respuesta ✅'; return; }
     const t = $('palabra').value.trim().slice(0, 120);
     if (!t) return;
-    db.ref(R + '/nube').push({t, a: $('nombre').value.trim() || 'Anónimo'});
+    db.ref(R + '/nube').push({t});
     setFlag('palabra');
     $('palabra').value = '';
     $('msg-palabra').textContent = '¡Gracias! 🙌';
