@@ -1133,5 +1133,52 @@ if (esAlumno){
   };
 }
 </script>
+  <script type="module">
+  // 1. Importar las funciones necesarias del SDK de Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import { getDatabase, ref, set, get, push, child } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+  // 2. Configuración de tu proyecto (reemplaza los datos faltantes desde tu Consola de Firebase)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCBsejsy6TeNhm0TCdzFfVwzRIBXnqnHHY",
+    authDomain: "clase-muestra-adrian-cerda.firebaseapp.com",
+    databaseURL: "https://clase-muestra-adrian-cerda-default-rtdb.firebaseio.com", // Verifica tu URL exacta en Firebase
+    projectId: "clase-muestra-adrian-cerda",
+    storageBucket: "clase-muestra-adrian-cerda.firebasestorage.app",
+    messagingSenderId: "TU_MESSAGING_SENDER_ID",
+    appId: "TU_APP_ID"
+  };
+
+  // 3. Inicializar Firebase y la base de datos
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // --- EJEMPLO: Guardar datos ---
+  function guardarRegistro(nombre, puntaje) {
+    const listaRef = ref(db, 'resultados');
+    const nuevoRegistroRef = push(listaRef);
+    set(nuevoRegistroRef, {
+      nombre: nombre,
+      puntaje: puntaje,
+      fecha: new Date().toISOString()
+    })
+    .then(() => console.log("Datos guardados correctamente"))
+    .catch((error) => console.error("Error al guardar:", error));
+  }
+
+  // --- EJEMPLO: Leer datos ---
+  function leerRegistros() {
+    const dbRef = ref(db);
+    get(child(dbRef, 'resultados')).then((snapshot) => {
+      if (snapshot.exists()) {
+        console.log("Datos obtenidos:", snapshot.val());
+      } else {
+        console.log("No hay datos disponibles");
+      }
+    }).catch((error) => {
+      console.error("Error al leer:", error);
+    });
+  }
+</script>
 </body>
 </html>
