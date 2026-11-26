@@ -90,12 +90,16 @@
        cursor:pointer;transition:transform .2s;user-select:none}
   .app:hover{transform:translateY(-3px)}
   .app.hecha{opacity:.55}
-  .app.mal{border-color:#f87171;opacity:.75}
+  .app.mal{border-color:#f87171;opacity:.85}
   .app.mal small{color:#fecaca}
   .app small{display:block;font-size:.85rem;font-weight:700}
-  .chip{width:58px;height:58px;border-radius:14px;margin:0 auto .4rem;display:flex;
-        align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;color:#fff}
+  .chip{width:58px;height:58px;border-radius:14px;margin:0 auto .4rem;display:flex;position:relative;
+        align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;color:#fff;overflow:hidden}
   .chip img{width:62%;height:62%;object-fit:contain;filter:brightness(0) invert(1)}
+  /* Marca de error: cruz roja sobre el logotipo */
+  .app.mal .chip::after{content:"✘";position:absolute;inset:0;display:flex;align-items:center;
+        justify-content:center;background:rgba(185,28,28,.88);color:#fff;font-size:2.2rem;font-weight:900;
+        border-radius:14px}
   .detalle{display:none;margin-top:1rem;background:var(--tarjeta);border:1px solid var(--borde);
            border-radius:18px;padding:1rem 1.3rem;width:min(820px,100%);text-align:left}
   .detalle p{font-size:1.05rem}
@@ -823,7 +827,7 @@ if (!esAlumno){
   }
   db.ref(R + '/asig').on('value', s => {
     ASIG = [];
-    s.forEach(x => ASIG.push(x.val()));
+    s.forEach(x => { ASIG.push(x.val()); });
     renderAsigDocente();
   });
   db.ref(R + '/avance').on('value', s => {
@@ -861,13 +865,11 @@ if (!esAlumno){
   function renderClasif(){
     const lista = {comunicar:[], cocrear:[], organizar:[]};
     const vistos = new Set();
-    // Solo la última clasificación del docente por herramienta
     CLASIF.filter(v => v.m === 'docente').forEach(v => {
       const a = APPS.find(q => q.id === v.app);
-      if (!a) return;
-      if (vistos.has(a.id)) return;
+      if (!a || vistos.has(a.id)) return;
       vistos.add(a.id);
-      lista[v.cat] && lista[v.cat].push({nombre: a.nombre, ok: v.ok});
+      if (lista[a.cat]) lista[a.cat].push({nombre: a.nombre, ok: v.ok});
     });
     Object.keys(lista).forEach(k => {
       const caja = document.querySelector(`.cat[data-cat="${k}"] .lista-cat`);
@@ -943,7 +945,7 @@ if (!esAlumno){
   // Herramientas (diapositiva 8) y resultados (diapositiva 9) se actualizan en vivo
   db.ref(R + '/clasif').on('value', s => {
     CLASIF = [];
-    s.forEach(x => CLASIF.push(x.val()));
+    s.forEach(x => { CLASIF.push(x.val()); });
     pintarGrid($('grid-docente'), $('detalle-docente'), 'docente');
     renderClasif();
     renderResultados();
@@ -1098,7 +1100,7 @@ if (esAlumno){
   // Asignaciones: se actualizan en vivo para mostrar "Yo" o "Nosotros"
   db.ref(R + '/asig').on('value', s => {
     ASIG = [];
-    s.forEach(x => ASIG.push(x.val()));
+    s.forEach(x => { ASIG.push(x.val()); });
     pintarRoles();
     pintarDocs();
   });
