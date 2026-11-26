@@ -90,6 +90,8 @@
        cursor:pointer;transition:transform .2s;user-select:none}
   .app:hover{transform:translateY(-3px)}
   .app.hecha{opacity:.55}
+  .app.mal{border-color:#f87171;opacity:.75}
+  .app.mal small{color:#fecaca}
   .app small{display:block;font-size:.85rem;font-weight:700}
   .chip{width:58px;height:58px;border-radius:14px;margin:0 auto .4rem;display:flex;
         align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;color:#fff}
@@ -218,7 +220,7 @@ const CONFIG = {
   docs:    "https://docs.google.com/document/d/1HYgr5ivAzi-8F6PrBOYFoqcaHlWCWBWWnbmEmxgGiNg/edit?usp=sharing",
   forms:   "https://forms.gle/REEMPLAZA_FORM_ID",
   video:   "demo_docs.mp4",
-  docente: "Dr. J. Adrián Cerda R."   // nombre con el que el docente aparece en el podio
+  docente: "Dr. J. Adrián Cerda R."   // nombre con el que el docente aparece en el marcador
 };
 </script>
 
@@ -427,8 +429,15 @@ const CONFIG = {
     <div class="msg" id="msg-palabra"></div>
   </div>
 
-  <div class="bloque" id="bloque-fin">
-    <button class="btn rojo" id="btn-fin" style="width:100%">✖ Terminar participación y cerrar</button>
+  <div class="act bloque" data-act="cierre">
+    <h3>¡Gracias por participar! 🙌</h3>
+    <p>Puedes descargar el ensayo que trabajaron en equipo.</p>
+    <div class="botones">
+      <a class="btn azul lnk-descarga" target="_blank" rel="noopener">⬇️ Descargar ensayo (.docx)</a>
+    </div>
+    <div class="botones">
+      <button class="btn rojo" id="btn-fin" style="width:100%">✖ Terminar participación y cerrar</button>
+    </div>
   </div>
 </div>
 
@@ -449,6 +458,7 @@ if (esAlumno) document.body.classList.add('alumno');
 const $ = id => document.getElementById(id);
 const linkAlumno = location.href.split('?')[0] + '?p=1';
 const DOC_ID = (CONFIG.docs.match(/\/d\/([^/]+)/) || [])[1] || '';
+const DESCARGA_URL = DOC_ID ? `https://docs.google.com/document/d/${DOC_ID}/export?format=docx` : '';
 
 // Una entrada por diapositiva docente, en el mismo orden (12 en total)
 const DIAPOS = [
@@ -463,11 +473,8 @@ const DIAPOS = [
   {t:'Resultados',     act:null},
   {t:'Google Docs',    act:'docs'},
   {t:'Palabras',       act:'palabra'},
-  {t:'Cierre',         act:null}
+  {t:'Cierre',         act:'cierre'}
 ];
-// Índice (base 0) de la diapositiva "Resultados". Los estados solo se muestran desde aquí.
-const IDX_RES = 8;
-const IDX_HERRAMIENTAS = 7;
 
 const OPC = {
   A:'💬 Chat de WhatsApp',
@@ -529,19 +536,20 @@ const APPS = [
    limite:'No registra avances ni quién hizo qué; solo fechas.'}
 ];
 
-// Preguntas Sí/No: las tres primeras se contestan "Sí" y las tres últimas "No".
+// Preguntas Sí/No, alternadas: Sí, No, Sí, No, Sí, No.
 // Al contestar todas, se muestra la herramienta recomendada: Google Docs.
 const PREG = [
   {q:'¿Vamos a escribir un texto entre varios?',             ok:'si'},
-  {q:'¿Necesitamos editarlo al mismo tiempo?',              ok:'si'},
-  {q:'¿Queremos ver quién cambió qué y dejar comentarios?', ok:'si'},
   {q:'¿Vamos a realizar un cartel?',                        ok:'no'},
+  {q:'¿Necesitamos editarlo al mismo tiempo?',              ok:'si'},
   {q:'¿Vamos a realizar un video?',                         ok:'no'},
+  {q:'¿Queremos ver quién cambió qué y dejar comentarios?', ok:'si'},
   {q:'¿Queremos agendar una reunión un día de lluvia?',     ok:'no'}
 ];
 
-// Asignaciones de rol (se llena desde Firebase)
+// Asignaciones de rol y clasificaciones (se llenan desde Firebase)
 let ASIG = [];
+let CLASIF = [];
 
 /* ==================== ESTADO POR SESIÓN ==================== */
 let VER = '0';
@@ -579,6 +587,11 @@ function fraseRol(indice, nombres){
 }
 function nombresDe(rolId){
   return ASIG.filter(x => x.rol === rolId).map(x => x.n);
+}
+// Resultado del docente para una herramienta: null (sin clasificar), true o false
+function resultadoDocente(appId){
+  const v = CLASIF.find(x => x.m === 'docente' && x.app === appId);
+  return v ? v.ok : null;
 }
 function logo(a){
   const w = el('div', 'chip');
@@ -624,11 +637,21 @@ function cargarLogo(id){
 function pintarGrid(cont, det, modo){
   cont.innerHTML = '';
   APPS.forEach(a => {
-    const hecha = flag(kClasif(modo, a.id));
-    const c = el('div', 'app' + (hecha ? ' hecha' : ''));
+    let clase = '', marca = '';
+    if (modo === 'docente'){
+      const r = resultadoDocente(a.id);
+      if (r !== null){
+        clase = r ? 'hecha' : 'hecha mal';
+        marca = r ? ' ✔' : ' ✘';
+      }
+    } else if (flag(kClasif(modo, a.id))){
+      clase = 'hecha';
+      marca = ' ✔';
+    }
+    const c = el('div', 'app ' + clase);
     c.style.borderColor = a.color;
     c.appendChild(logo(a));
-    c.appendChild(el('small', '', a.nombre + (hecha ? ' ✔' : '')));
+    c.appendChild(el('small', '', a.nombre + marca));
     c.onclick = () => mostrarDetalle(a, cont, det, modo);
     cont.appendChild(c);
   });
@@ -654,7 +677,7 @@ function clasificar(a, cat, cont, det, modo){
   const ok = a.cat === cat;
   setFlag(kClasif(modo, a.id));
   const nombre = modo === 'docente' ? CONFIG.docente : ($('nombre').value.trim() || '');
-  db.ref(R + '/clasif').push({app: a.id, cat, ok, t: Date.now(), n: nombre});
+  db.ref(R + '/clasif').push({app: a.id, cat, ok, t: Date.now(), n: nombre, m: modo});
   det.querySelector('.botones')?.remove();
   det.appendChild(el('p', '', ok
     ? '✔ ¡Correcto! Va en ' + CATS[a.cat] + '.'
@@ -677,7 +700,6 @@ if (!esAlumno){
   enlace($('lnk-forms'), CONFIG.forms);
 
   const PALETA = ['#7ED491','#fde047','#ffffff','#60a5fa','#b388eb'];
-  let clasifData = [];
   let actual = 0;
 
   // Gracias animado (diapositiva 12)
@@ -690,14 +712,13 @@ if (!esAlumno){
 
   // Botones del documento
   const vistaDoc = DOC_ID ? `https://docs.google.com/document/d/${DOC_ID}/preview` : '';
-  const descargaDoc = DOC_ID ? `https://docs.google.com/document/d/${DOC_ID}/export?format=docx` : '';
   $('btn-ver-doc').onclick = () => {
     if (!vistaDoc) return;
     window.open(vistaDoc, '_blank', 'width=1100,height=800,noopener');
   };
   $('btn-descargar-doc').onclick = () => {
-    if (!descargaDoc) return;
-    window.open(descargaDoc, '_blank', 'noopener');
+    if (!DESCARGA_URL) return;
+    window.open(DESCARGA_URL, '_blank', 'noopener');
   };
 
   // Video
@@ -722,7 +743,7 @@ if (!esAlumno){
     $('contador').textContent = (actual + 1) + ' / ' + slidesT.length;
     $('logo-fijo').style.visibility = actual === 0 ? 'hidden' : 'visible';
     db.ref(R + '/estado').set({slide: actual});
-    if (actual === IDX_HERRAMIENTAS) renderClasif();
+    renderClasif();
     renderResultados();
   }
   $('next').onclick = () => irA(actual + 1);
@@ -772,7 +793,7 @@ if (!esAlumno){
     });
   });
 
-  // Roles del ensayo (diapositiva 6): tarjetas con la frase de asignación
+  // Roles del ensayo (diapositiva 6)
   ROLES.forEach(r => {
     const c = el('div', 'rol');
     c.appendChild(el('h4', '', r.t));
@@ -802,14 +823,14 @@ if (!esAlumno){
   });
 
   // Preguntas en vivo (diapositiva 7)
-  // La herramienta recomendada aparece cuando hay respuestas a todas las preguntas
+  // La herramienta recomendada aparece cuando cada pregunta tiene al menos una respuesta
   db.ref(R + '/respuestas').on('value', s => {
-    $('tally-rec').style.display = s.numChildren() >= PREG.length ? 'block' : 'none';
     const c = PREG.map(() => ({si:0, no:0}));
     s.forEach(x => {
       const v = x.val();
       if (c[v.p]) c[v.p][v.r]++;
     });
+    $('tally-rec').style.display = c.every(x => x.si + x.no > 0) ? 'block' : 'none';
     const cont = $('preg-docente');
     cont.innerHTML = '';
     PREG.forEach((p, i) => {
@@ -825,18 +846,13 @@ if (!esAlumno){
     });
   });
 
-  // Herramientas (diapositiva 8)
-  pintarGrid($('grid-docente'), $('detalle-docente'), 'docente');
-
-  // Recuadros de categoría: solo aparecen las herramientas clasificadas correctamente.
-  // Se reconstruyen completos en cada actualización.
+  // Herramientas (diapositiva 8): recuadros de categoría con las correctas.
+  // Marcador del docente: empieza en 10 de 10 y resta cada clasificación incorrecta.
   function renderClasif(){
     const lista = {comunicar:new Set(), cocrear:new Set(), organizar:new Set()};
-    let ok = 0;
-    clasifData.forEach(v => {
+    CLASIF.forEach(v => {
       const a = APPS.find(q => q.id === v.app);
-      if (!a) return;
-      if (v.ok){ ok++; lista[a.cat].add(a.nombre); }
+      if (a && v.ok) lista[a.cat].add(a.nombre);
     });
     Object.keys(lista).forEach(k => {
       const caja = document.querySelector(`.cat[data-cat="${k}"] .lista-cat`);
@@ -844,17 +860,21 @@ if (!esAlumno){
       caja.innerHTML = '';
       lista[k].forEach(nombre => caja.appendChild(el('span', 'pill', '✔ ' + nombre)));
     });
-    $('tally-clasif').textContent = `Clasificaciones: ${clasifData.length} · Correctas: ${ok}`;
+    const errores = CLASIF.filter(v => v.m === 'docente' && !v.ok).length;
+    const correctas = APPS.length - errores;
+    $('tally-clasif').textContent = `Clasificaciones del docente: ${correctas} correctas de ${APPS.length}`;
   }
 
   // Resultados (diapositiva 9)
+  // Podio: solo alumnos. Estado: "Desconocida" por defecto; "Conocida" si la mayoría
+  // de las clasificaciones fue correcta y hubo al menos dos aciertos.
   function renderResultados(){
-    const terminada = actual >= IDX_RES;
     const porApp = {};
     APPS.forEach(a => porApp[a.id] = {n:0, ok:0});
     const porPersona = {};
-    clasifData.forEach(v => {
+    CLASIF.forEach(v => {
       if (porApp[v.app]){ porApp[v.app].n++; if (v.ok) porApp[v.app].ok++; }
+      if (v.m === 'docente') return;
       const nom = (v.n || '').trim();
       if (nom){
         porPersona[nom] = porPersona[nom] || {n:nom, ok:0, tot:0};
@@ -884,8 +904,6 @@ if (!esAlumno){
     }
 
     // Tabla de dos columnas: herramienta y estado
-    // Conocida si la mayoría fue correcta y hubo al menos dos aciertos; si no, Desconocida.
-    // Solo aparece cuando la clasificación terminó (diapositiva Resultados en adelante).
     const tabla = el('table', 'tab-res');
     const head = el('tr');
     ['Herramienta','Estado'].forEach(h => head.appendChild(el('th', '', h)));
@@ -893,28 +911,24 @@ if (!esAlumno){
     let conocidas = 0, desconocidas = 0;
     APPS.forEach(a => {
       const d = porApp[a.id];
-      let estado = '', clase = '';
-      if (terminada && d.n > 0){
-        const conocida = d.ok >= 2 && d.ok > d.n / 2;
-        estado = conocida ? 'Conocida' : 'Desconocida';
-        clase = conocida ? 'conocida' : 'desconocida';
-        conocida ? conocidas++ : desconocidas++;
-      }
+      const conocida = d.n > 0 && d.ok >= 2 && d.ok > d.n / 2;
+      conocida ? conocidas++ : desconocidas++;
       const tr = el('tr');
       tr.appendChild(el('td', '', a.nombre));
-      tr.appendChild(el('td', clase, estado));
+      tr.appendChild(el('td', conocida ? 'conocida' : 'desconocida', conocida ? 'Conocida' : 'Desconocida'));
       tabla.appendChild(tr);
     });
     $('res-tabla').innerHTML = '';
     $('res-tabla').appendChild(tabla);
 
-    $('res-refuerzo').textContent = !terminada ? ''
-      : `Conocidas: ${conocidas} · Desconocidas: ${desconocidas}`;
+    $('res-refuerzo').textContent = `Conocidas: ${conocidas} · Desconocidas: ${desconocidas}`;
   }
 
+  // Herramientas (diapositiva 8) y resultados (diapositiva 9) se actualizan en vivo
   db.ref(R + '/clasif').on('value', s => {
-    clasifData = [];
-    s.forEach(x => clasifData.push(x.val()));
+    CLASIF = [];
+    s.forEach(x => CLASIF.push(x.val()));
+    pintarGrid($('grid-docente'), $('detalle-docente'), 'docente');
     renderClasif();
     renderResultados();
   });
@@ -1080,6 +1094,7 @@ if (esAlumno){
   });
 
   document.querySelectorAll('.lnk-docs').forEach(a => enlace(a, CONFIG.docs));
+  document.querySelectorAll('.lnk-descarga').forEach(a => enlace(a, DESCARGA_URL));
 
   $('btn-palabra').onclick = () => {
     if (flag('palabra')){ $('msg-palabra').textContent = 'Ya enviaste tu respuesta ✅'; return; }
