@@ -123,6 +123,7 @@
   .roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;width:min(1000px,100%);margin-top:1rem}
   .rol{background:var(--tarjeta);border:1px solid var(--borde);border-radius:18px;padding:1rem;text-align:left}
   .rol h4{color:var(--verde-claro);font-size:1.1rem;margin-bottom:.3rem}
+  .rol .frase{font-size:1.1rem;font-weight:700;margin-top:.6rem;min-height:2.6em}
 
   /* Palabras en vivo: solo texto, sin recuadro */
   .nube-lista{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6rem 1.4rem;
@@ -152,6 +153,7 @@
   .botones{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0}
   .ayuda{font-size:.9rem;opacity:.8;margin-top:.4rem}
   .msg{min-height:1.4em;font-weight:700;color:#fde047;margin-top:.4rem}
+  .frase-alumno{font-size:1.2rem;font-weight:700;margin:.6rem 0}
 
   /* Botones */
   .btn{display:inline-block;padding:.75rem 1.3rem;border-radius:999px;border:none;font-size:1.05rem;
@@ -284,13 +286,12 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 6 · Ensayo -->
+  <!-- 6 · Ensayo: asignación de roles -->
   <section class="slide">
     <h2>✍️ Desarrollo y actividad: ensayo de ciencias</h2>
-    <p>Escriban un breve ensayo en equipo sobre el "ciclo del agua". Cada integrante escribe su parte y la marca en su celular.</p>
+    <p>Escriban un breve ensayo en equipo sobre el "ciclo del agua". Cada integrante elige su rol desde su celular.</p>
     <div class="roles" id="roles-docente"></div>
     <div class="tally" id="tally-avance"></div>
-    <div style="margin-top:1rem"><a class="btn lnk-docs" target="_blank" rel="noopener">📄 Abrir el documento</a></div>
   </section>
 
   <!-- 7 · Preguntas Sí / No -->
@@ -298,13 +299,13 @@ const CONFIG = {
     <h2>🧭 ¿Qué herramienta necesita nuestro ensayo?</h2>
     <p>Respondan desde su celular. Las respuestas aparecen aquí.</p>
     <div id="preg-docente" style="width:min(900px,100%);margin-top:1rem"></div>
-    <div class="tally">Herramienta recomendada: ⭐ Google Docs</div>
+    <div class="tally" id="tally-rec" style="display:none">Herramienta recomendada: ⭐ Google Docs</div>
   </section>
 
   <!-- 8 · Herramientas (el docente también clasifica) -->
   <section class="slide">
     <h2>🧩 Conoce algunas de las herramientas de trabajo colaborativo</h2>
-    <p>Toca cada una para ver para qué sirve y clasifícala según su función. Los alumnos también la clasifican desde su celular.</p>
+    <p>Toca cada una para ver su utilidad y clasifícala según su función. Los alumnos también la clasifican desde su celular.</p>
     <div class="apps" id="grid-docente"></div>
     <div class="detalle" id="detalle-docente"></div>
     <div class="cats">
@@ -326,7 +327,7 @@ const CONFIG = {
 
   <!-- 10 · Google Docs -->
   <section class="slide">
-    <h2>📝 Google Docs: escribir juntos</h2>
+    <h2>📝 Google Docs: escribamos juntos nuestro ensayo</h2>
     <div class="pasos">
       <div class="paso"><b>1</b>Abrir el documento</div>
       <div class="paso"><b>2</b>Escribir a la vez</div>
@@ -391,9 +392,9 @@ const CONFIG = {
 
   <div class="act bloque" data-act="ensayo">
     <h3>Ensayo del ciclo del agua</h3>
-    <p>Abre el documento y escribe tu parte. Luego márcala.</p>
-    <div class="botones"><a class="btn azul lnk-docs" target="_blank" rel="noopener">📄 Abrir documento</a></div>
+    <p>Escribe tu nombre arriba y elige tu integrante.</p>
     <div id="roles-alumno"></div>
+    <div class="botones"><a class="btn azul lnk-docs" target="_blank" rel="noopener">📄 Abrir documento</a></div>
     <div class="msg" id="msg-avance"></div>
   </div>
 
@@ -459,16 +460,17 @@ const ROLES = [
   {id:'r3', t:'Integrante 3', seccion:'3. Conclusiones y Referencias'}
 ];
 
-// Herramientas: color oficial de cada marca. "oscuro" = icono negro (fondos claros)
+// Herramientas: color oficial de cada marca (aproximado; verificar en guía de marca).
+// "oscuro" = icono negro (fondos claros)
 const APPS = [
   {id:'whatsapp', nombre:'WhatsApp', slug:'whatsapp', color:'#25D366', cat:'comunicar',
    para:'Mensajes rápidos y llamadas entre personas.',
    ejemplo:'Avisar que la reunión cambió de hora.',
    limite:'Los acuerdos se pierden entre muchos mensajes y no tiene tareas con responsable y fecha.'},
-  {id:'discord', nombre:'Discord', slug:'discord', color:'#5865F2', cat:'comunicar',
-   para:'Canales organizados de texto y voz.',
-   ejemplo:'Un canal para dudas y otro para avances del equipo.',
-   limite:'Su interfaz es nueva para quien no juega; hay que explicarla.'},
+  {id:'gmeet', nombre:'Google Meet', slug:'googlemeet', color:'#00897B', cat:'comunicar',
+   para:'Videollamadas con compañeros, con pantalla compartida.',
+   ejemplo:'Reunión del equipo para revisar el avance del ensayo.',
+   limite:'Sin cuenta institucional, algunas funciones y tiempos de llamada son limitados.'},
   {id:'teams', nombre:'Teams', slug:'microsoftteams', color:'#6264A7', cat:'comunicar',
    para:'Reuniones, chat y archivos del equipo en un solo lugar.',
    ejemplo:'Videollamada del equipo con el archivo a la vista.',
@@ -485,18 +487,18 @@ const APPS = [
    para:'Diseñar carteles e infografías con plantillas.',
    ejemplo:'Crear un cartel del ciclo del agua con íconos listos.',
    limite:'Algunas plantillas y elementos requieren la versión de pago.'},
-  {id:'miro', nombre:'Miro', slug:'miro', color:'#FFD02F', oscuro:true, cat:'cocrear',
-   para:'Pizarrón infinito para lluvia de ideas y mapas.',
-   ejemplo:'Lluvia de ideas con notas adhesivas antes de escribir.',
-   limite:'Un tablero con muchas piezas puede volverse difícil de leer.'},
-  {id:'trello', nombre:'Trello', slug:'trello', color:'#0052CC', cat:'organizar',
-   para:'Tarjetas en columnas con responsable y fecha.',
-   ejemplo:'Columnas: por hacer, en proceso y hecho.',
+  {id:'padlet', nombre:'Padlet', slug:'padlet', color:'#EF4B4B', cat:'cocrear',
+   para:'Muro visual donde cada integrante publica notas, imágenes y enlaces.',
+   ejemplo:'Cada alumno sube una idea sobre la evaporación en su nota.',
+   limite:'El plan gratuito tiene límites de tableros y de contenido.'},
+  {id:'planner', nombre:'Planner', slug:'microsoftplanner', color:'#31752F', cat:'organizar',
+   para:'Tareas en tableros con responsable, fecha y avance.',
+   ejemplo:'Asignar cada parte del ensayo con su fecha de entrega.',
    limite:'No sirve para escribir textos largos; ahí conviene un documento.'},
-  {id:'notion', nombre:'Notion', slug:'notion', color:'#000000', cat:'organizar',
-   para:'Notas, bases de datos y páginas de proyecto en un solo lugar.',
-   ejemplo:'Una página con el plan del proyecto y su calendario.',
-   limite:'Tiene muchas opciones; al principio puede confundir.'},
+  {id:'onenote', nombre:'OneNote', slug:'microsoftonenote', color:'#7719AA', cat:'organizar',
+   para:'Cuadernos digitales con secciones y páginas compartidas.',
+   ejemplo:'Un cuaderno del equipo con fuentes y notas por tema.',
+   limite:'Sus funciones de colaboración en tiempo real dependen de la cuenta usada.'},
   {id:'gcal', nombre:'Calendar', slug:'googlecalendar', color:'#4285F4', cat:'organizar',
    para:'Calendario compartido con recordatorios.',
    ejemplo:'Apartar la fecha de entrega y avisar a todo el equipo.',
@@ -509,6 +511,9 @@ const PREG = [
   {q:'¿Necesitamos editarlo al mismo tiempo?',               si:'cocrear'},
   {q:'¿Queremos ver quién cambió qué y dejar comentarios?',  si:'cocrear'}
 ];
+
+// Asignaciones de rol (se llena desde Firebase)
+let ASIG = [];
 
 /* ==================== ESTADO POR SESIÓN ==================== */
 let VER = '0';
@@ -531,6 +536,21 @@ function boton(txt, fn, cls=''){
   const b = el('button', 'btn ' + cls, txt);
   b.onclick = fn;
   return b;
+}
+// Une nombres: "A", "A y B", "A, B y C"
+function unir(lista){
+  if (lista.length <= 1) return lista.join('');
+  return lista.slice(0, -1).join(', ') + ' y ' + lista[lista.length - 1];
+}
+// Frase de asignación según cuántos alumnos eligieron el mismo integrante
+function fraseRol(indice, nombres){
+  if (!nombres.length) return 'Sin asignar';
+  const num = indice + 1;
+  if (nombres.length === 1) return `Yo ${nombres[0]} soy el integrante ${num}`;
+  return `Nosotros ${unir(nombres)} somos el integrante ${num}`;
+}
+function nombresDe(rolId){
+  return ASIG.filter(x => x.rol === rolId).map(x => x.n);
 }
 function logo(a){
   const w = el('div', 'chip');
@@ -686,7 +706,7 @@ if (!esAlumno){
   $('reset').onclick = () => {
     if (!confirm('¿Borrar todas las participaciones y empezar de nuevo?')) return;
     db.ref(R).update({
-      votos: null, respuestas: null, clasif: null, avance: null, nube: null,
+      votos: null, respuestas: null, clasif: null, avance: null, nube: null, asig: null,
       ver: String(Date.now())
     }).then(() => irA(0));
   };
@@ -723,24 +743,39 @@ if (!esAlumno){
     });
   });
 
-  // Roles del ensayo (diapositiva 6)
+  // Roles del ensayo (diapositiva 6): tarjetas con la frase de asignación
   ROLES.forEach(r => {
     const c = el('div', 'rol');
     c.appendChild(el('h4', '', r.t));
     c.appendChild(el('p', '', r.seccion));
+    c.appendChild(el('p', 'frase', 'Sin asignar'));
     c.dataset.rol = r.id;
     $('roles-docente').appendChild(c);
+  });
+  function renderAsigDocente(){
+    ROLES.forEach((r, i) => {
+      const card = document.querySelector(`#roles-docente .rol[data-rol="${r.id}"]`);
+      if (!card) return;
+      const nombres = nombresDe(r.id);
+      card.querySelector('.frase').textContent = fraseRol(i, nombres);
+      card.style.borderColor = nombres.length ? '#7ED491' : '';
+    });
+  }
+  db.ref(R + '/asig').on('value', s => {
+    ASIG = [];
+    s.forEach(x => ASIG.push(x.val()));
+    renderAsigDocente();
   });
   db.ref(R + '/avance').on('value', s => {
     const listos = new Set();
     s.forEach(x => { listos.add(x.val().rol); });
-    document.querySelectorAll('#roles-docente .rol').forEach(c =>
-      c.style.borderColor = listos.has(c.dataset.rol) ? '#7ED491' : '');
-    $('tally-avance').textContent = `Roles terminados: ${listos.size} de ${ROLES.length}`;
+    $('tally-avance').textContent = `Partes marcadas como listas: ${listos.size} de ${ROLES.length}`;
   });
 
   // Preguntas en vivo (diapositiva 7)
+  // La herramienta recomendada aparece solo cuando hay al menos una respuesta
   db.ref(R + '/respuestas').on('value', s => {
+    $('tally-rec').style.display = s.numChildren() > 0 ? 'block' : 'none';
     const c = PREG.map(() => ({si:0, no:0}));
     s.forEach(x => {
       const v = x.val();
@@ -764,18 +799,19 @@ if (!esAlumno){
   // Herramientas (diapositiva 8)
   pintarGrid($('grid-docente'), $('detalle-docente'), 'docente');
 
+  // Recuadros de categoría: solo aparecen las herramientas clasificadas correctamente
   function renderClasif(){
-    const lista = {comunicar:[], cocrear:[], organizar:[]};
+    const lista = {comunicar:new Set(), cocrear:new Set(), organizar:new Set()};
     let ok = 0;
     clasifData.forEach(v => {
       const a = APPS.find(q => q.id === v.app);
-      if (v.ok) ok++;
-      if (lista[v.cat] && a) lista[v.cat].push((v.ok ? '✔ ' : '✘ ') + a.nombre);
+      if (!a) return;
+      if (v.ok){ ok++; lista[a.cat].add(a.nombre); }
     });
     Object.keys(lista).forEach(k => {
       const cont = document.querySelector(`.cat[data-cat="${k}"]`);
       cont.querySelectorAll('.pill').forEach(p => p.remove());
-      lista[k].forEach(nombre => cont.appendChild(el('span', 'pill', nombre)));
+      lista[k].forEach(nombre => cont.appendChild(el('span', 'pill', '✔ ' + nombre)));
     });
     $('tally-clasif').textContent = `Clasificaciones: ${clasifData.length} · Correctas: ${ok}`;
   }
@@ -817,7 +853,7 @@ if (!esAlumno){
     }
 
     // Tabla de dos columnas: herramienta y estado
-    // Estado: Conocida si la mayoría fue correcta y hubo al menos dos aciertos; si no, Desconocida.
+    // Conocida si la mayoría fue correcta y hubo al menos dos aciertos; si no, Desconocida.
     // Solo aparece cuando la clasificación terminó (diapositiva Resultados en adelante).
     const tabla = el('table', 'tab-res');
     const head = el('tr');
@@ -911,24 +947,47 @@ if (esAlumno){
     c.appendChild(f);
   }
 
+  // Asignación de roles: el alumno elige un integrante y ve su frase
+  function elegirRol(id){
+    const nombre = $('nombre').value.trim();
+    if (!nombre){
+      $('msg-avance').textContent = 'Escribe tu nombre arriba antes de elegir.';
+      return;
+    }
+    db.ref(R + '/asig').push({rol: id, n: nombre, t: Date.now()});
+    setLocal('mi-rol', id);
+    $('msg-avance').textContent = '';
+    pintarRoles();
+  }
   function pintarRoles(){
     const c = $('roles-alumno');
     c.innerHTML = '';
-    ROLES.forEach(r => {
-      const hecho = flag('av-' + r.id);
-      const b = boton((hecho ? '✔ ' : '') + r.t + ': ' + r.seccion.split('.')[0] + '. Marcar lista',
-        () => {
-          db.ref(R + '/avance').push({rol: r.id, t: Date.now()});
-          setFlag('av-' + r.id);
-          $('msg-avance').textContent = '¡Gracias por tu parte! 🙌';
-          pintarRoles();
-        }, hecho ? 'verde-oscuro' : '');
-      b.style.display = 'block';
-      b.style.width = '100%';
-      b.style.marginBottom = '.5rem';
-      b.disabled = hecho;
-      c.appendChild(b);
-    });
+    const miRol = leer('mi-rol');
+    if (!miRol){
+      ROLES.forEach((r, i) => {
+        const b = boton(`Soy el integrante ${i + 1}`, () => elegirRol(r.id));
+        b.style.display = 'block';
+        b.style.width = '100%';
+        b.style.marginBottom = '.5rem';
+        c.appendChild(b);
+      });
+      return;
+    }
+    const i = ROLES.findIndex(r => r.id === miRol);
+    const r = ROLES[i];
+    c.appendChild(el('p', 'frase-alumno', fraseRol(i, nombresDe(miRol))));
+    c.appendChild(el('p', '', r.seccion));
+    const hecho = flag('av-' + miRol);
+    const b = boton(hecho ? '✔ Parte marcada como lista' : 'Marcar mi parte lista', () => {
+      db.ref(R + '/avance').push({rol: miRol, t: Date.now()});
+      setFlag('av-' + miRol);
+      $('msg-avance').textContent = '¡Gracias por tu parte! 🙌';
+      pintarRoles();
+    }, hecho ? 'verde-oscuro' : '');
+    b.style.display = 'block';
+    b.style.width = '100%';
+    b.disabled = hecho;
+    c.appendChild(b);
   }
 
   function pintarActivo(){
@@ -951,6 +1010,13 @@ if (esAlumno){
     pintarRoles();
     pintarPreguntas();
     pintarActivo();
+  });
+
+  // Asignaciones: se actualizan en vivo para mostrar "Yo" o "Nosotros"
+  db.ref(R + '/asig').on('value', s => {
+    ASIG = [];
+    s.forEach(x => ASIG.push(x.val()));
+    pintarRoles();
   });
 
   // Diapositiva actual, controlada por el docente
