@@ -106,6 +106,7 @@
   .cat .lista-cat{display:flex;flex-wrap:wrap;gap:.3rem}
   .pill{display:inline-block;background:#fff;color:var(--azul);border-radius:999px;
         padding:.25rem .7rem;font-weight:700;font-size:.95rem}
+  .pill.mal{background:#fecaca;color:#7f1d1d;text-decoration:line-through}
 
   /* Resultados: podio y tabla */
   .podio{display:flex;align-items:flex-end;justify-content:center;gap:1rem;margin:.8rem 0;min-height:230px}
@@ -121,6 +122,12 @@
   .tab-res th{color:var(--verde-claro)}
   .tab-res td.conocida{color:var(--verde-claro);font-weight:700}
   .tab-res td.desconocida{color:#fecaca;font-weight:700}
+  .contadores{display:flex;gap:1rem;justify-content:center;margin-top:1rem;flex-wrap:wrap}
+  .contador{background:var(--tarjeta);border:1px solid var(--borde);border-radius:16px;padding:.7rem 1.4rem;
+            font-size:1.1rem;font-weight:700}
+  .contador b{display:block;font-size:2rem}
+  .contador.c-ok b{color:var(--verde-claro)}
+  .contador.c-no b{color:#fecaca}
 
   /* Roles del ensayo */
   .roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;width:min(1000px,100%);margin-top:1rem}
@@ -331,7 +338,10 @@ const CONFIG = {
     <h3>🏅 Podio de aciertos</h3>
     <div class="podio" id="res-podio"></div>
     <div id="res-tabla" style="width:100%;display:flex;justify-content:center"></div>
-    <div class="tally" id="res-refuerzo"></div>
+    <div class="contadores">
+      <div class="contador c-ok" id="cnt-conocidas"><b>0</b>Conocidas</div>
+      <div class="contador c-no" id="cnt-desconocidas"><b>10</b>Desconocidas</div>
+    </div>
   </section>
 
   <!-- 10 · Google Docs -->
@@ -846,28 +856,33 @@ if (!esAlumno){
     });
   });
 
-  // Herramientas (diapositiva 8): recuadros de categoría con las correctas.
-  // Marcador del docente: empieza en 10 de 10 y resta cada clasificación incorrecta.
+  // Recuadros de categoría (diapositiva 8): clasificaciones del docente.
+  // ✔ si acertó; ✘ tachado si se equivocó. Marcador: N aciertos de 10.
   function renderClasif(){
-    const lista = {comunicar:new Set(), cocrear:new Set(), organizar:new Set()};
-    CLASIF.forEach(v => {
+    const lista = {comunicar:[], cocrear:[], organizar:[]};
+    const vistos = new Set();
+    // Solo la última clasificación del docente por herramienta
+    CLASIF.filter(v => v.m === 'docente').forEach(v => {
       const a = APPS.find(q => q.id === v.app);
-      if (a && v.ok) lista[a.cat].add(a.nombre);
+      if (!a) return;
+      if (vistos.has(a.id)) return;
+      vistos.add(a.id);
+      lista[v.cat] && lista[v.cat].push({nombre: a.nombre, ok: v.ok});
     });
     Object.keys(lista).forEach(k => {
       const caja = document.querySelector(`.cat[data-cat="${k}"] .lista-cat`);
       if (!caja) return;
       caja.innerHTML = '';
-      lista[k].forEach(nombre => caja.appendChild(el('span', 'pill', '✔ ' + nombre)));
+      lista[k].forEach(it => {
+        caja.appendChild(el('span', 'pill' + (it.ok ? '' : ' mal'), (it.ok ? '✔ ' : '✘ ') + it.nombre));
+      });
     });
-    const errores = CLASIF.filter(v => v.m === 'docente' && !v.ok).length;
-    const correctas = APPS.length - errores;
-    $('tally-clasif').textContent = `Clasificaciones del docente: ${correctas} correctas de ${APPS.length}`;
+    const aciertos = CLASIF.filter(v => v.m === 'docente' && v.ok).length;
+    $('tally-clasif').textContent = `${aciertos} aciertos de ${APPS.length}`;
   }
 
   // Resultados (diapositiva 9)
-  // Podio: solo alumnos. Estado: "Desconocida" por defecto; "Conocida" si la mayoría
-  // de las clasificaciones fue correcta y hubo al menos dos aciertos.
+  // Podio: solo alumnos. Conocida: más de dos aciertos entre alumnos y docente.
   function renderResultados(){
     const porApp = {};
     APPS.forEach(a => porApp[a.id] = {n:0, ok:0});
@@ -903,7 +918,7 @@ if (!esAlumno){
       });
     }
 
-    // Tabla de dos columnas: herramienta y estado
+    // Tabla: herramienta y estado. Conocida = más de dos aciertos.
     const tabla = el('table', 'tab-res');
     const head = el('tr');
     ['Herramienta','Estado'].forEach(h => head.appendChild(el('th', '', h)));
@@ -911,7 +926,7 @@ if (!esAlumno){
     let conocidas = 0, desconocidas = 0;
     APPS.forEach(a => {
       const d = porApp[a.id];
-      const conocida = d.n > 0 && d.ok >= 2 && d.ok > d.n / 2;
+      const conocida = d.ok > 2;
       conocida ? conocidas++ : desconocidas++;
       const tr = el('tr');
       tr.appendChild(el('td', '', a.nombre));
@@ -921,7 +936,8 @@ if (!esAlumno){
     $('res-tabla').innerHTML = '';
     $('res-tabla').appendChild(tabla);
 
-    $('res-refuerzo').textContent = `Conocidas: ${conocidas} · Desconocidas: ${desconocidas}`;
+    $('cnt-conocidas').innerHTML = `<b>${conocidas}</b>Conocidas`;
+    $('cnt-desconocidas').innerHTML = `<b>${desconocidas}</b>Desconocidas`;
   }
 
   // Herramientas (diapositiva 8) y resultados (diapositiva 9) se actualizan en vivo
