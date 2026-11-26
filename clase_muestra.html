@@ -243,15 +243,15 @@ const CONFIG = {
   <!-- 3 · Dilema -->
   <section class="slide">
     <h2>🗓️ Dilema</h2>
-    <p><b>Situación:</b> cinco compañeros, cinco horarios distintos y la entrega es el viernes.</p>
+    <p><b>Situación:</b> cinco compañeros de grupo, cinco horarios distintos y la entrega del ensayo de ciencias es para el viernes.</p>
     <p><b>Pregunta:</b> ¿qué harían primero?</p>
     <div class="barras" id="barras"></div>
-    <p style="opacity:.8;margin-top:1rem">Voten desde su celular. Las barras cambian en vivo.</p>
+    <p style="opacity:.8;margin-top:1rem">Elige tu respuesta desde su celular.</p>
   </section>
 
   <!-- 4 · WhatsApp -->
   <section class="slide">
-    <h2>💬 WhatsApp: un aliado con límites</h2>
+    <h2>💬 WhatsApp: un aliado, sí, pero con límites</h2>
     <div class="dos">
       <div class="caja">
         <h3>✅ Lo que hace bien</h3>
@@ -259,6 +259,7 @@ const CONFIG = {
           <li>Todos ya lo usamos; no hay que instalar nada</li>
           <li>Avisos inmediatos y llamadas rápidas</li>
           <li>Funciona aun con poca señal</li>
+          <li>Integra el uso de polls </li>
         </ul>
       </div>
       <div class="caja">
@@ -271,12 +272,12 @@ const CONFIG = {
         </ul>
       </div>
     </div>
-    <p style="margin-top:1.2rem">WhatsApp sirve para <b>avisar</b>. Para <b>escribir juntos</b>, cada tarea necesita su propia app.</p>
+    <p style="margin-top:1.2rem">WhatsApp sirve para <b>avisar</b> y ponernos de acuerdo a lo mucho. Pero para <b>escribir un ensayo juntos</b>, lamentablemente no, de modo que, cada tarea necesita su propia app.</p>
   </section>
 
   <!-- 5 · Objetivos (vertical) -->
   <section class="slide">
-    <h2>🎯 Al final podrás:</h2>
+    <h2>🎯 Al final de esta clase podrás:</h2>
     <div class="lista-vert">
       <div class="fila-obj"><b>1</b>Distinguir si una tarea es sincrónica o asincrónica</div>
       <div class="fila-obj"><b>2</b>Elegir la herramienta correcta</div>
@@ -287,8 +288,8 @@ const CONFIG = {
 
   <!-- 6 · Ensayo -->
   <section class="slide">
-    <h2>✍️ Actividad: ensayo del ciclo del agua</h2>
-    <p>Escriban un breve ensayo en equipo. Cada integrante escribe su parte y la marca en su celular.</p>
+    <h2>✍️ Desarrollo y actividad: ensayo de ciencias</h2>
+    <p>Escriban un breve ensayo en equipo sobre el "ciclo del agua". Cada integrante escribe su parte y la marca en su celular.</p>
     <div class="roles" id="roles-docente"></div>
     <div class="tally" id="tally-avance"></div>
     <div style="margin-top:1rem"><a class="btn lnk-docs" target="_blank" rel="noopener">📄 Abrir el documento</a></div>
@@ -297,15 +298,15 @@ const CONFIG = {
   <!-- 7 · Preguntas Sí / No -->
   <section class="slide">
     <h2>🧭 ¿Qué herramienta necesita nuestro ensayo?</h2>
-    <p>Respondan desde su celular. Las respuestas aparecen aquí en vivo.</p>
+    <p>Respondan desde su celular. Las respuestas aparecen aquí.</p>
     <div id="preg-docente" style="width:min(900px,100%);margin-top:1rem"></div>
     <div class="tally">Herramienta recomendada: ⭐ Google Docs</div>
   </section>
 
   <!-- 8 · Herramientas -->
   <section class="slide">
-    <h2>🧩 Conoce las herramientas</h2>
-    <p>Toca cada una para ver para qué sirve. Después, cada alumno la clasifica desde su celular.</p>
+    <h2>🧩 Conoce algunas de las herramientas de trabajo colaborativo </h2>
+    <p>Toca cada una para ver para qué sirve. Después, clasificalas según su función.</p>
     <div class="apps" id="grid-docente"></div>
     <div class="detalle" id="detalle-docente"></div>
     <div class="cats">
@@ -345,7 +346,7 @@ const CONFIG = {
   <!-- 11 · Palabras -->
   <section class="slide">
     <h2>☁️ ¿Qué te llevas de tu clase de hoy?</h2>
-    <p>Una palabra o una frase completa. Aparece en vivo con quien la escribió.</p>
+    <p>Una palabra o una frase completa. Aparecerá aquí.</p>
     <div class="nube-lista" id="nube"></div>
     <div style="margin-top:.8rem"><a class="btn verde-oscuro" id="lnk-forms" target="_blank" rel="noopener">📝 Ticket de salida</a></div>
   </section>
@@ -455,7 +456,7 @@ const CATS = {comunicar:'💬 Comunicar', cocrear:'✏️ Co-crear', organizar:'
 const ROLES = [
   {id:'r1', t:'Integrante 1', seccion:'1. Introducción: qué es el ciclo y por qué es vital'},
   {id:'r2', t:'Integrante 2', seccion:'2. Explicación: evaporación, condensación, precipitación e infiltración'},
-  {id:'r3', t:'Integrante 3', seccion:'3. Conclusiones y 4. Referencias'}
+  {id:'r3', t:'Integrante 3', seccion:'3. Conclusiones y Referencias'}
 ];
 
 // Herramientas: color oficial de cada marca. "oscuro" = icono negro (fondos claros)
